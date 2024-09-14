@@ -92,4 +92,9 @@ public class ChessBoard {
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(boardLayout, that.boardLayout);
     }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(boardLayout);
+    }
 }
