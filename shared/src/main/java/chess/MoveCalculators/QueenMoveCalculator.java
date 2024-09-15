@@ -12,7 +12,7 @@ public class QueenMoveCalculator implements MoveCalculator {
     public static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition) {
         int currX = currentPosition.getColumn();
         int currY = currentPosition.getRow();
-        int [][] moveDirections = {{-1,-1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
+        int[][] moveDirections = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
 
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
