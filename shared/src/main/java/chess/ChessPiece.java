@@ -76,7 +76,7 @@ public class ChessPiece {
             case PAWN -> team == ChessGame.TeamColor.WHITE ? "P" : "p";
         };
     }
-    //만약 문제 발생시 하얀색이 대문자이고 검은색이 소문자여서 문제가 발생할 수 있음
+
 
     @Override
     public boolean equals(Object o) {

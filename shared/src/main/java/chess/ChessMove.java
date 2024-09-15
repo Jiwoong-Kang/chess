@@ -14,12 +14,16 @@ public class ChessMove {
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
+    // promotionPiece means when the Pawn gets promoted, where it was
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
     }
+
+    // variables input from other places are moved to the class variable which is final through the code above.
 
     /**
      * @return ChessPosition of starting location
@@ -45,6 +49,8 @@ public class ChessMove {
         return promotionPiece;
     }
 
+    // all three codes above(start, end, promotion) give exact variables when one of those are called.
+
     @Override
     public String toString() {
         return "ChessMove{" +
@@ -53,6 +59,9 @@ public class ChessMove {
                 ", promotionPiece=" + promotionPiece +
                 '}';
     }
+
+    // it will look like ChessMove{startPosition=ChessPosition{row=2, col=4},
+    // endPosition=ChessPosition{row=3, col=4}, promotionPiece=QUEEN}
 
     @Override
     public boolean equals(Object o) {
@@ -64,8 +73,16 @@ public class ChessMove {
                 && promotionPiece == chessMove.promotionPiece;
     }
 
+//    "this" means ChessMove itself, and it compares Object o. If they are the same, it returns true.
+//     if o is null, it means there is nothing to compare, so it is false.
+//     if its class and o's class are different, it is false. || means "or"
+//     o changes itself as ChessPosition type and it is saved in that.
+
+
     @Override
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
+
+    // through hashing, it become much more useful to be found when it is called by HashMap or HashSet
 }
