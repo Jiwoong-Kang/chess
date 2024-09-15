@@ -18,6 +18,8 @@ public interface MoveCalculator {
                 (position.getColumn() >= 1 && position.getColumn() <= 8);
     }
 
+    // see if wanted location is on the board, or the outside of the board
+
     static HashSet<ChessMove> generateStaticMoves(ChessPosition currPosition, int[][] relativeMoves, ChessBoard board) {
         HashSet<ChessMove> moves = HashSet.newHashSet(8);
 
@@ -32,6 +34,8 @@ public interface MoveCalculator {
         }
         return moves;
     }
+
+    // StaticMoves like knight or king
 
     static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor team) {
         HashSet<ChessMove> moves = HashSet.newHashSet(27);
@@ -61,5 +65,10 @@ public interface MoveCalculator {
         }
         return moves;
     }
-
+    // this is for Queen, Bishop, Rook
+    // 27 means it is the maximum movement of Queen.
+    // this function continues running until it meets any kinds of obstructed.
+    // first, it will be stopped if it is the outside of the board.
+    // second, it will be stopped if there is any kinds of pieces whether it is player's team or enemy's team.
+    // if the possibleMove place is empty, add that place to moves.
 }
