@@ -21,6 +21,8 @@ public class ChessPiece {
         this.type = type;
     }
 
+    // variables input from other places are moved to the class variable which is final through the code above.
+
     /**
      * The various different chess piece options
      */
@@ -47,6 +49,8 @@ public class ChessPiece {
         return type;
     }
 
+    // two codes above returns which team(color) is and what type of piece is.
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -65,6 +69,8 @@ public class ChessPiece {
         };
     }
 
+    // according to its type, they have their own distinct features to move. It directly calls moveCalculators.
+
     @Override
     public String toString() {
         return switch (type) {
@@ -77,6 +83,7 @@ public class ChessPiece {
         };
     }
 
+    // if the color of piece is White, it has a capital letter, else lower case.
 
     @Override
     public boolean equals(Object o) {
