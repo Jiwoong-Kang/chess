@@ -1,5 +1,7 @@
 package chess;
 
+import chess.MoveCalculators.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -53,8 +55,27 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-
+        return switch (type){
+            case KING -> KingMoveCalculator.getMoves(board, myPosition);
+            case QUEEN -> QueenMoveCalculator.getMoves(board, myPosition);
+            case BISHOP -> BishopMoveCalculator.getMoves(board, myPosition);
+            case KNIGHT -> KnightMoveCalculator.getMoves(board, myPosition);
+            case PAWN -> PawnMoveCalculator.getMoves(board, myPosition);
+        }
     }
+
+    @Override
+    public String toString() {
+        return switch (type) {
+            case KING -> team == ChessGame.TeamColor.WHITE ? "K" : "k";
+            case QUEEN -> team == ChessGame.TeamColor.WHITE ? "Q" : "q";
+            case BISHOP -> team == ChessGame.TeamColor.WHITE ? "B" : "b";
+            case KNIGHT -> team == ChessGame.TeamColor.WHITE ? "N" : "n";
+            case ROOK -> team == ChessGame.TeamColor.WHITE ? "R" : "r";
+            case PAWN -> team == ChessGame.TeamColor.WHITE ? "P" : "p";
+        };
+    }
+    //만약 문제 발생시 하얀색이 대문자이고 검은색이 소문자여서 문제가 발생할 수 있음
 
     @Override
     public boolean equals(Object o) {
