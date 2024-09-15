@@ -47,6 +47,7 @@ public class ChessGame {
             return this == WHITE ? "White" : "Black";
         }
     }
+    // By using toString, it gives direct recognition which one is while and black.
 
     /**
      * Gets a valid moves for a piece at the given location
@@ -55,6 +56,7 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
+    // all types of available moves collection
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece currentPiece = board.getPiece(startPosition);
         if (currentPiece == null) {
@@ -74,6 +76,12 @@ public class ChessGame {
         }
         return validMoves;
     }
+
+    // HashSet<ChessMove> brings all possible paths to go, startPosition becomes its criteria.
+    // saves possible moves to valid moves
+    // after it moves temporarily, clean the startPosition and endPosition becomes currentPosition.
+    // if player's king is safe, that is added to valid move.
+    // endPosition went back to normal and its piece's new startPosition is currentPosition.
 
     /**
      * Makes a move in a chess game
@@ -104,6 +112,10 @@ public class ChessGame {
         }
     }
 
+    // goodMoves are from validMoves, if those are not existed, return false because of boolean.
+    // if there is a valid move and player's correct turn, check if there is any promotion.
+    // the system removes the currentPosition piece and make it exist on where it should move.
+
     /**
      * Determines if the given team is in check
      *
@@ -114,15 +126,18 @@ public class ChessGame {
         ChessPosition kingPos = null;
         for (int y = 1; y <= 8 && kingPos==null; y++) {
             for (int x = 1; x <= 8 && kingPos==null; x++) {
-                ChessPiece currentPiece = board.getPiece(new ChessPosition(y, x)); // 문제 발생시 x,y로 변경
+                ChessPiece currentPiece = board.getPiece(new ChessPosition(y, x));
                 if (currentPiece == null) {
                     continue;
                 }
                 if(currentPiece.getTeamColor() == teamColor && currentPiece.getPieceType() == ChessPiece.PieceType.KING){
-                    kingPos = new ChessPosition(y, x); // 문제 발생시 x,y로 변경
+                    kingPos = new ChessPosition(y, x);
                 }
             }
         }
+
+        // it looks through all parts of the board and if the currentPiece can get the any kings.
+        // but if it is a king of the current player, it is fine or if there is no king on the way.
 
         for (int y = 1; y <= 8; y++) {
             for (int x = 1; x <= 8; x++) {
@@ -137,6 +152,9 @@ public class ChessGame {
                 }
             }
         }
+
+        // if currentPiece is my team, it should be fine.
+        // if enemyMove reaches to my king, it returns true because it is check state.
         return false;
     }
 
@@ -174,6 +192,9 @@ public class ChessGame {
         }
         return true;
     }
+
+    // bring the currentPosition and check if there is any available movement.
+    // if not, it is staleMate.
 
     /**
      * Sets this game's chessboard with a given board
