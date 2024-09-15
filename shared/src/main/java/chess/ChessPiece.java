@@ -60,8 +60,9 @@ public class ChessPiece {
             case QUEEN -> QueenMoveCalculator.getMoves(board, myPosition);
             case BISHOP -> BishopMoveCalculator.getMoves(board, myPosition);
             case KNIGHT -> KnightMoveCalculator.getMoves(board, myPosition);
+            case ROOK -> RookMoveCalculator.getMoves(board, myPosition);
             case PAWN -> PawnMoveCalculator.getMoves(board, myPosition);
-        }
+        };
     }
 
     @Override
