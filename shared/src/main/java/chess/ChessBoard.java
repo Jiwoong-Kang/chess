@@ -25,6 +25,7 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         boardLayout[position.getColumn()-1][position.getRow()-1] = piece;
     }
+    // -1 because normal chessboard starts from (1,1), but programing starts with (0,0)
 
     /**
      * Gets a chess piece on the chessboard
@@ -36,6 +37,7 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         return boardLayout[position.getColumn()-1][position.getRow()-1];
     }
+    // it returns the location.
 
     public ChessGame.TeamColor getTeamOfSquare(ChessPosition position) {
         if (getPiece(position) != null) {
@@ -43,7 +45,8 @@ public class ChessBoard {
         }
         else return null;
     }
-    // 위에 있는 이것은 일단 만들어 놓음
+    // Bring the teamcolor from ChessGame.java to decide the teamcolor.
+    // it returns the color of the selected piece
 
     /**
      * Sets the board to the default starting board
@@ -92,6 +95,15 @@ public class ChessBoard {
         }
         return output.toString();
     }
+    // the reason why y starts from 7 to 0, but x starts 1 to 7 is to make it look like the real chessboard.
+//    |BR|BN|BB|BQ|BK|BB|BN|BR|
+//    |BP|BP|BP|BP|BP|BP|BP|BP|
+//    |  |  |  |  |  |  |  |  |
+//    |  |  |  |  |  |  |  |  |
+//    |  |  |  |  |  |  |  |  |
+//    |  |  |  |  |  |  |  |  |
+//    |WP|WP|WP|WP|WP|WP|WP|WP|
+//    |WR|WN|WB|WQ|WK|WB|WN|WR|
 
     @Override
     public boolean equals(Object o) {
@@ -105,4 +117,6 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(boardLayout);
     }
+
+    //since boardlayout is 2 dimension system, deep ways should be used.
 }
