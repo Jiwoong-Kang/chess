@@ -21,6 +21,7 @@ public class PawnMoveCalculator implements MoveCalculator {
 
         for (ChessPiece.PieceType promotionPiece : promotionPieces) {
             //Add moving forward, if available
+            //Promotion sometimes happens, so it is added by default to avoid making many exceptions
             ChessPosition forwardPosition = new ChessPosition(currY + moveIncrement, currX);
             if (MoveCalculator.isValidSquare(forwardPosition) && board.getPiece(forwardPosition) == null) {
                 moves.add(new ChessMove(currentPosition, forwardPosition, promotionPiece));
