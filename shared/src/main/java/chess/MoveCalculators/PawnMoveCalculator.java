@@ -55,4 +55,9 @@ public class PawnMoveCalculator implements MoveCalculator {
         return moves;
     }
 
+    //The reason the pawn's promotion is 7 when it's white and 2 when it's black is because it has to be there to have a chance of it.
+    // In the case of white, 8 is the highest, but position 7, which is just before moving up to 8, has the possibility.
+    // In the case of black, you have to go to position 1, which is at the bottom, but only 2, which is just before that, has the possibility of promotion.
+    // The positions of the chessboard are made up of 1-8, and to prevent this, I balanced it with column-1 and row-1, so when writing the code here, just write it as is.
+
 }
