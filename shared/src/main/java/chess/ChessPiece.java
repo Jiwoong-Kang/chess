@@ -14,10 +14,10 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    private final ChessGame.TeamColor team;
+    private final ChessGame.TeamColor teamColor;
     private final PieceType type;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.team = pieceColor;
+        this.teamColor = pieceColor;
         this.type = type;
     }
 
@@ -39,7 +39,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return team;
+        return teamColor;
     }
 
     /**
@@ -74,12 +74,12 @@ public class ChessPiece {
     @Override
     public String toString() {
         return switch (type) {
-            case KING -> team == ChessGame.TeamColor.WHITE ? "K" : "k";
-            case QUEEN -> team == ChessGame.TeamColor.WHITE ? "Q" : "q";
-            case BISHOP -> team == ChessGame.TeamColor.WHITE ? "B" : "b";
-            case KNIGHT -> team == ChessGame.TeamColor.WHITE ? "N" : "n";
-            case ROOK -> team == ChessGame.TeamColor.WHITE ? "R" : "r";
-            case PAWN -> team == ChessGame.TeamColor.WHITE ? "P" : "p";
+            case KING -> teamColor == ChessGame.TeamColor.WHITE ? "K" : "k";
+            case QUEEN -> teamColor == ChessGame.TeamColor.WHITE ? "Q" : "q";
+            case BISHOP -> teamColor == ChessGame.TeamColor.WHITE ? "B" : "b";
+            case KNIGHT -> teamColor == ChessGame.TeamColor.WHITE ? "N" : "n";
+            case ROOK -> teamColor == ChessGame.TeamColor.WHITE ? "R" : "r";
+            case PAWN -> teamColor == ChessGame.TeamColor.WHITE ? "P" : "p";
         };
     }
 
@@ -90,11 +90,11 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return team == that.team && type == that.type;
+        return teamColor == that.teamColor && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(team, type);
+        return Objects.hash(teamColor, type);
     }
 }

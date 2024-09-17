@@ -17,6 +17,7 @@ public class ChessGame {
 
     public ChessGame() {
         board = new ChessBoard();
+        board.resetBoard();
         setTeamTurn(TeamColor.WHITE);
     }
 
@@ -43,9 +44,6 @@ public class ChessGame {
         WHITE,
         BLACK;
 
-        public String toString() {
-            return this == WHITE ? "White" : "Black";
-        }
     }
     // By using toString, it gives direct recognition which one is while and black.
 

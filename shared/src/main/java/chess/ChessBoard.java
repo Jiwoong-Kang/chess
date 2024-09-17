@@ -10,10 +10,10 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] boardLayout;
+    private ChessPiece[][] boardForm;
 
     public ChessBoard() {
-        boardLayout = new ChessPiece[8][8];
+        boardForm = new ChessPiece[8][8];
     }
 
     /**
@@ -23,7 +23,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        boardLayout[position.getColumn()-1][position.getRow()-1] = piece;
+        boardForm[position.getColumn()-1][position.getRow()-1] = piece;
     }
     // -1 because normal chessboard starts from (1,1), but programing starts with (0,0)
 
@@ -35,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return boardLayout[position.getColumn()-1][position.getRow()-1];
+        return boardForm[position.getColumn()-1][position.getRow()-1];
     }
     // it returns the location.
 
@@ -53,7 +53,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        boardLayout = new ChessPiece[8][8];
+        boardForm = new ChessPiece[8][8];
 
         // add all white pieces
         addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
@@ -88,7 +88,7 @@ public class ChessBoard {
         for (int y = 7; y >= 0; y--){
             output.append("|");
             for (int x = 0; x < 8; x++){
-                output.append(boardLayout[x][y] != null ? boardLayout[x][y].toString() : "");
+                output.append(boardForm[x][y] != null ? boardForm[x][y].toString() : "");
                 output.append("|");
             }
             output.append("\n");
@@ -110,13 +110,13 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.deepEquals(boardLayout, that.boardLayout);
+        return Arrays.deepEquals(boardForm, that.boardForm);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.deepHashCode(boardLayout);
+        return Arrays.deepHashCode(boardForm);
     }
 
-    //since boardlayout is 2 dimension system, deep ways should be used.
+    //since boardForm is 2 dimension system, deep ways should be used.
 }
