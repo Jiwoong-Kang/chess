@@ -23,19 +23,19 @@ public class PawnMoveCalculator implements MoveCalculator {
             //Add moving forward, if available
             //Promotion sometimes happens, so it is added by default to avoid making many exceptions
             ChessPosition forwardPosition = new ChessPosition(currY + moveIncrement, currX);
-            if (MoveCalculator.isValidSquare(forwardPosition) && board.getPiece(forwardPosition) == null) {
+            if (MoveCalculator.inSquare(forwardPosition) && board.getPiece(forwardPosition) == null) {
                 moves.add(new ChessMove(currentPosition, forwardPosition, promotionPiece));
             }
             //Add left attack, if available
             ChessPosition leftAttack = new ChessPosition(currY + moveIncrement, currX-1);
-            if (MoveCalculator.isValidSquare(leftAttack) &&
+            if (MoveCalculator.inSquare(leftAttack) &&
                     board.getPiece(leftAttack) != null &&
                     board.getTeamOfSquare(leftAttack) != team) {
                 moves.add(new ChessMove(currentPosition, leftAttack, promotionPiece));
             }
             //Add right attack, if available
             ChessPosition rightAttack = new ChessPosition(currY + moveIncrement, currX+1);
-            if (MoveCalculator.isValidSquare(rightAttack) &&
+            if (MoveCalculator.inSquare(rightAttack) &&
                     board.getPiece(rightAttack) != null &&
                     board.getTeamOfSquare(rightAttack) != team) {
                 moves.add(new ChessMove(currentPosition, rightAttack, promotionPiece));
@@ -43,7 +43,7 @@ public class PawnMoveCalculator implements MoveCalculator {
 
             //Add first move double, if available
             ChessPosition doubleForwardPosition = new ChessPosition(currY + moveIncrement*2, currX);
-            if (MoveCalculator.isValidSquare(doubleForwardPosition) &&
+            if (MoveCalculator.inSquare(doubleForwardPosition) &&
                     ((team == ChessGame.TeamColor.WHITE && currY == 2) || (team == ChessGame.TeamColor.BLACK && currY == 7)) &&
                     board.getPiece(doubleForwardPosition) == null &&
                     board.getPiece(forwardPosition) == null) {

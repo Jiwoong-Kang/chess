@@ -13,9 +13,9 @@ public interface MoveCalculator {
         return null;
     }
 
-    static boolean isValidSquare(ChessPosition position) {
-        return (position.getRow() >= 1 && position.getRow() <= 8) &&
-                (position.getColumn() >= 1 && position.getColumn() <= 8);
+    static boolean inSquare(ChessPosition location) {
+        return (location.getRow() >= 1 && location.getRow() <= 8) &&
+                (location.getColumn() >= 1 && location.getColumn() <= 8);
     }
 
     // see if wanted location is on the board, or the outside of the board
@@ -29,7 +29,7 @@ public interface MoveCalculator {
         ChessGame.TeamColor team = board.getTeamOfSquare(currPosition);
         for (int[] relativeMove : relativeMoves) {
             ChessPosition possiblePosition = new ChessPosition(currY + relativeMove[1], currX + relativeMove[0]);
-            if (MoveCalculator.isValidSquare(possiblePosition) && board.getTeamOfSquare(possiblePosition) != team)
+            if (MoveCalculator.inSquare(possiblePosition) && board.getTeamOfSquare(possiblePosition) != team)
                 moves.add(new ChessMove(currPosition, possiblePosition, null));
         }
         return moves;
@@ -44,7 +44,7 @@ public interface MoveCalculator {
             int i = 1;
             while (!obstructed) {
                 ChessPosition possiblePosition = new ChessPosition(currY + direction[1]*i, currX + direction[0]*i);
-                if (!MoveCalculator.isValidSquare(possiblePosition)) {
+                if (!MoveCalculator.inSquare(possiblePosition)) {
                     obstructed = true;
                 }
                 else if (board.getPiece(possiblePosition) == null) {
