@@ -1,8 +1,7 @@
 package chess;
 
-import chess.MoveCalculators.*;
+import chess.MovementRules.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -60,12 +59,12 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return switch (type){
-            case KING -> KingMoveCalculator.getMoves(board, myPosition);
-            case QUEEN -> QueenMoveCalculator.getMoves(board, myPosition);
-            case BISHOP -> BishopMoveCalculator.getMoves(board, myPosition);
-            case KNIGHT -> KnightMoveCalculator.getMoves(board, myPosition);
-            case ROOK -> RookMoveCalculator.getMoves(board, myPosition);
-            case PAWN -> PawnMoveCalculator.getMoves(board, myPosition);
+            case KING -> KingMovementRule.getMoves(board, myPosition);
+            case QUEEN -> QueenMovementRule.getMoves(board, myPosition);
+            case BISHOP -> BishopMovementRule.getMoves(board, myPosition);
+            case KNIGHT -> KnightMovementRule.getMoves(board, myPosition);
+            case ROOK -> RookMovementRule.getMoves(board, myPosition);
+            case PAWN -> PawnMovementRule.getMoves(board, myPosition);
         };
     }
 

@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.MovementRules;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -7,9 +7,9 @@ import chess.ChessPosition;
 
 import java.util.HashSet;
 
-public interface MoveCalculator {
+public interface MovementRule {
 
-    static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currPosition) {
+    static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition) {
         return null;
     }
 
@@ -20,41 +20,41 @@ public interface MoveCalculator {
 
     // see if wanted location is on the board, or the outside of the board
 
-    static HashSet<ChessMove> generateStaticMoves(ChessPosition currPosition, int[][] relativeMoves, ChessBoard board) {
+    static HashSet<ChessMove> generateStaticMoves(ChessPosition currentPosition, int[][] relativeMoves, ChessBoard board) {
         HashSet<ChessMove> moves = HashSet.newHashSet(8);
 
-        int currX = currPosition.getColumn();
-        int currY = currPosition.getRow();
+        int currX = currentPosition.getColumn();
+        int currY = currentPosition.getRow();
 
-        ChessGame.TeamColor team = board.getTeamOfSquare(currPosition);
+        ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
         for (int[] relativeMove : relativeMoves) {
             ChessPosition possiblePosition = new ChessPosition(currY + relativeMove[1], currX + relativeMove[0]);
-            if (MoveCalculator.inSquare(possiblePosition) && board.getTeamOfSquare(possiblePosition) != team)
-                moves.add(new ChessMove(currPosition, possiblePosition, null));
+            if (MovementRule.inSquare(possiblePosition) && board.getTeamOfSquare(possiblePosition) != team)
+                moves.add(new ChessMove(currentPosition, possiblePosition, null));
         }
         return moves;
     }
 
     // StaticMoves like knight or king
 
-    static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor team) {
+    static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
         HashSet<ChessMove> moves = HashSet.newHashSet(27);
         for (int[] direction : moveDirections) {
             boolean obstructed = false;
             int i = 1;
             while (!obstructed) {
                 ChessPosition possiblePosition = new ChessPosition(currY + direction[1]*i, currX + direction[0]*i);
-                if (!MoveCalculator.inSquare(possiblePosition)) {
+                if (!MovementRule.inSquare(possiblePosition)) {
                     obstructed = true;
                 }
                 else if (board.getPiece(possiblePosition) == null) {
                     moves.add(new ChessMove(currPosition, possiblePosition, null));
                 }
-                else if (board.getTeamOfSquare(possiblePosition) != team) {
+                else if (board.getTeamOfSquare(possiblePosition) != teamColor) {
                     moves.add(new ChessMove(currPosition, possiblePosition, null));
                     obstructed = true;
                 }
-                else if (board.getTeamOfSquare(possiblePosition) == team) {
+                else if (board.getTeamOfSquare(possiblePosition) == teamColor) {
                     obstructed = true;
                 }
                 else {

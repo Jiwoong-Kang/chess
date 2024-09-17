@@ -1,4 +1,4 @@
-package chess.MoveCalculators;
+package chess.MovementRules;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -7,7 +7,7 @@ import chess.ChessPosition;
 
 import java.util.HashSet;
 
-public class BishopMoveCalculator implements MoveCalculator {
+public class BishopMovementRule implements MovementRule {
 
     public static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition){
         int currX = currentPosition.getColumn();
@@ -16,6 +16,6 @@ public class BishopMoveCalculator implements MoveCalculator {
 
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
-        return MoveCalculator.generateDirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
+        return MovementRule.generateDirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
     }
 }
