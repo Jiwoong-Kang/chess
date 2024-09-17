@@ -121,38 +121,39 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPos = null;
-        for (int y = 1; y <= 8 && kingPos==null; y++) {
-            for (int x = 1; x <= 8 && kingPos==null; x++) {
-                ChessPiece currentPiece = board.getPiece(new ChessPosition(y, x));
-                if (currentPiece == null) {
-                    continue;
-                }
-                if(currentPiece.getTeamColor() == teamColor && currentPiece.getPieceType() == ChessPiece.PieceType.KING){
-                    kingPos = new ChessPosition(y, x);
+        ChessPosition kingPos = findKingPosition(teamColor);
+        if (kingPos == null) return false;
+
+        return canAnyEnemyPieceReachPosition(teamColor, kingPos);
+    }
+
+    private ChessPosition findKingPosition(TeamColor teamColor) {
+        for (int y = 1; y <= 8; y++) {
+            for (int x = 1; x <= 8; x++) {
+                ChessPosition position = new ChessPosition(y, x);
+                ChessPiece piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return position;
                 }
             }
         }
+        return null;
+    }
 
-        // it looks through all parts of the board and if the currentPiece can get the any kings.
-        // but if it is a king of the current player, it is fine or if there is no king on the way.
-
+    private boolean canAnyEnemyPieceReachPosition(TeamColor teamColor, ChessPosition targetPosition) {
         for (int y = 1; y <= 8; y++) {
             for (int x = 1; x <= 8; x++) {
-                ChessPiece currentPiece = board.getPiece(new ChessPosition(y, x));
-                if (currentPiece == null || currentPiece.getTeamColor() == teamColor) {
-                    continue;
-                }
-                for (ChessMove enemyMove: currentPiece.pieceMoves(board, new ChessPosition(y, x))) {
-                    if(enemyMove.getEndPosition().equals(kingPos)){
-                        return true;
+                ChessPosition position = new ChessPosition(y, x);
+                ChessPiece piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    for (ChessMove move : piece.pieceMoves(board, position)) {
+                        if (move.getEndPosition().equals(targetPosition)) {
+                            return true;
+                        }
                     }
                 }
             }
         }
-
-        // if currentPiece is my team, it should be fine.
-        // if enemyMove reaches to my king, it returns true because it is check state.
         return false;
     }
 
