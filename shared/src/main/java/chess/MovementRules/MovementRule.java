@@ -46,25 +46,25 @@ public interface MovementRule {
     static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
         HashSet<ChessMove> moves = new HashSet<>();
         for (int[] direction : moveDirections) {
-            boolean obstructed = false;
+            boolean problems = false;
             int i = 1;
-            while (!obstructed) {
+            while (!problems) {
                 ChessPosition possiblePosition = new ChessPosition(currY + direction[1]*i, currX + direction[0]*i);
                 if (!MovementRule.inSquare(possiblePosition)) {
-                    obstructed = true;
+                    problems = true;
                 }
                 else if (board.getPiece(possiblePosition) == null) {
                     moves.add(new ChessMove(currPosition, possiblePosition, null));
                 }
                 else if (board.getTeamOfSquare(possiblePosition) != teamColor) {
                     moves.add(new ChessMove(currPosition, possiblePosition, null));
-                    obstructed = true;
+                    problems = true;
                 }
                 else if (board.getTeamOfSquare(possiblePosition) == teamColor) {
-                    obstructed = true;
+                    problems = true;
                 }
                 else {
-                    obstructed = true;
+                    problems = true;
                 }
                 i++;
             }
