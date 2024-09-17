@@ -20,25 +20,31 @@ public interface MovementRule {
 
     // see if wanted location is on the board, or the outside of the board
 
-    static HashSet<ChessMove> generateStaticMoves(ChessPosition currentPosition, int[][] relativeMoves, ChessBoard board) {
-        HashSet<ChessMove> moves = HashSet.newHashSet(8);
-
-        int currX = currentPosition.getColumn();
-        int currY = currentPosition.getRow();
-
+    static HashSet<ChessMove> generateStaticMoves(ChessPosition currentPosition, int[][] possibleMoves, ChessBoard board) {
+        HashSet<ChessMove> moves = new HashSet<>();
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
-        for (int[] relativeMove : relativeMoves) {
-            ChessPosition possiblePosition = new ChessPosition(currY + relativeMove[1], currX + relativeMove[0]);
-            if (MovementRule.inSquare(possiblePosition) && board.getTeamOfSquare(possiblePosition) != team)
-                moves.add(new ChessMove(currentPosition, possiblePosition, null));
+
+        for (int[] move : possibleMoves) {
+            ChessPosition newPosition = calculateNewPosition(currentPosition, move);
+            if (isValidMove(newPosition, team, board)) {
+                moves.add(new ChessMove(currentPosition, newPosition, null));
+            }
         }
         return moves;
+    }
+
+    private static ChessPosition calculateNewPosition(ChessPosition current, int[] move) {
+        return new ChessPosition(current.getRow() + move[1], current.getColumn() + move[0]);
+    }
+
+    private static boolean isValidMove(ChessPosition position, ChessGame.TeamColor team, ChessBoard board) {
+        return MovementRule.inSquare(position) && board.getTeamOfSquare(position) != team;
     }
 
     // StaticMoves like knight or king
 
     static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
-        HashSet<ChessMove> moves = HashSet.newHashSet(27);
+        HashSet<ChessMove> moves = new HashSet<>();
         for (int[] direction : moveDirections) {
             boolean obstructed = false;
             int i = 1;

@@ -18,4 +18,5 @@ public class RookMovementRule implements MovementRule {
 
         return MovementRule.generateDirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
     }
+    // used static to call directly like RookMovementRule.getMoves(board, position)
 }
