@@ -7,18 +7,19 @@ import java.util.HashSet;
 public class MemoryUserDAO implements UserDAO {
 
     private HashSet<UserData> userCollection;
-    MemoryUserDAO() {
+
+    public MemoryUserDAO() {
         userCollection = HashSet.newHashSet(16);
     }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException{
         for (UserData user : userCollection) {
             if (user.username().equals(username)) {
                 return user;
             }
         }
-        return null;
+        throw new DataAccessException("User not found: " + username);
     }
 
 
