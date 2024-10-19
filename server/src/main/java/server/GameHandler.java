@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import dataAccess.UnauthorizedException;
 import dataAccess.BadRequestException;
 import model.GameData;
@@ -45,6 +44,11 @@ public class GameHandler {
         String authToken = req.headers("authorization");
         record JoinGameData(String playerColor, int gameID) {}
         JoinGameData joinData = new Gson().fromJson(req.body(), JoinGameData.class);
+
+        if (joinData.playerColor() == null || (!joinData.playerColor().equalsIgnoreCase("WHITE") && !joinData.playerColor().equalsIgnoreCase("BLACK"))) {
+            throw new BadRequestException("Invalid player color");
+        }
+
         boolean joinSuccess =  gameService.joinGame(authToken, joinData.gameID(), joinData.playerColor());
 
 

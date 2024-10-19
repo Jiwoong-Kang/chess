@@ -22,7 +22,7 @@ public class UserService {
         return authData;
     }
 
-    public AuthData loginUser(UserData userData) throws UnauthorizedException, BadRequestException {
+    public AuthData loginUser(UserData userData) throws UnauthorizedException {
         boolean userAuthenticated = false;
         try {
             userAuthenticated = userDAO.authenticateUser(userData.username(), userData.password());

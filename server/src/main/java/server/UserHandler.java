@@ -1,7 +1,5 @@
 package server;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import dataAccess.DataAccessException;
 import dataAccess.BadRequestException;
 import dataAccess.UnauthorizedException;
 import model.AuthData;
