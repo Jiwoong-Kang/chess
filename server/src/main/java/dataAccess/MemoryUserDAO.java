@@ -6,14 +6,14 @@ import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
 
-    private HashSet<UserData> userCollection;
+    private final HashSet<UserData> userCollection;
 
     public MemoryUserDAO() {
-        userCollection = HashSet.newHashSet(16);
+        this.userCollection = new HashSet<>(16);
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException{
+    public UserData getUser(String username) throws DataAccessException {
         for (UserData user : userCollection) {
             if (user.username().equals(username)) {
                 return user;
@@ -24,39 +24,34 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
-        try {
-            getUser(user.username());
+        if (userExists(user.username())) {
+            throw new DataAccessException("User already exists: " + user.username());
         }
-        catch (DataAccessException e) {
-            userCollection.add(user);
-            return;
-        }
-        throw new DataAccessException("User already exists: " + user.username());
+        userCollection.add(user);
     }
-
 
     @Override
     public boolean authenticateUser(String username, String password) throws DataAccessException {
-        boolean userExists = false;
-        for (UserData user : userCollection) {
-            if(user.username().equals(username)){
-                userExists = true;
-            }
-            if (user.username().equals(username) &&
-                    user.password().equals(password)) {
-                return true;
-            }
-        }
-        if (userExists){
-            return false;
-        }
-        else{
-            throw new DataAccessException("User does not exist: " + username);
-        }
+        UserData user = getUser(username);
+        return user.password().equals(password);
     }
 
     @Override
     public void clear() {
-        userCollection = HashSet.newHashSet(16);
+        userCollection.clear();
+    }
+
+    // Additional utility methods
+
+    private boolean userExists(String username) {
+        return userCollection.stream().anyMatch(user -> user.username().equals(username));
+    }
+
+    public int getUserCount() {
+        return userCollection.size();
+    }
+
+    public boolean isEmpty() {
+        return userCollection.isEmpty();
     }
 }

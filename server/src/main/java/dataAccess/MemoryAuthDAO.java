@@ -6,30 +6,25 @@ import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    HashSet<AuthData> dateBase;
+    private final HashSet<AuthData> database;
 
     public MemoryAuthDAO() {
-        dateBase = HashSet.newHashSet(16);
+        this.database = new HashSet<>(16);
     }
 
     @Override
     public void addAuth(AuthData authData) {
-        dateBase.add(authData);
+        database.add(authData);
     }
 
     @Override
     public void deleteAuth(String authToken) {
-        for (AuthData authData : dateBase) {
-            if (authData.authToken().equals(authToken)) {
-                dateBase.remove(authData);
-                break;
-            }
-        }
+        database.removeIf(authData -> authData.authToken().equals(authToken));
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        for (AuthData authData : dateBase) {
+        for (AuthData authData : database) {
             if (authData.authToken().equals(authToken)) {
                 return authData;
             }
@@ -39,7 +34,25 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public void clear() {
-        dateBase = HashSet.newHashSet(16);
+        database.clear();
     }
 
+    // Additional utility methods
+
+    public boolean containsAuthToken(String authToken) {
+        for (AuthData authData : database) {
+            if (authData.authToken().equals(authToken)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getAuthCount() {
+        return database.size();
+    }
+
+    public boolean isEmpty() {
+        return database.isEmpty();
+    }
 }

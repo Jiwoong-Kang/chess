@@ -30,6 +30,7 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+        Spark.init();
 
         Spark.delete("/db", this::clear);
         Spark.post("/user", userHandler::register);
@@ -42,8 +43,6 @@ public class Server {
         Spark.exception(BadRequestException.class, this::badRequestExceptionHandler);
         Spark.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
         Spark.exception(Exception.class, this::genericExceptionHandler);
-
-        Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();

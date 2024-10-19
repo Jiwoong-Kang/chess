@@ -6,19 +6,19 @@ import java.util.HashSet;
 
 public class MemoryGameDAO implements GameDAO {
 
-    HashSet<GameData> games;
+    private final HashSet<GameData> games;
 
     public MemoryGameDAO() {
-        games = HashSet.newHashSet(16);
+        this.games = new HashSet<>(16);
     }
 
     @Override
-    public HashSet<GameData> listGames(){
-        return games;
+    public HashSet<GameData> listGames() {
+        return new HashSet<>(games);
     }
 
     @Override
-    public void createGame(GameData game){
+    public void createGame(GameData game) {
         games.add(game);
     }
 
@@ -29,30 +29,32 @@ public class MemoryGameDAO implements GameDAO {
                 return game;
             }
         }
-        throw new DataAccessException("Game not found, id: " +gameID);
+        throw new DataAccessException("Game not found, id: " + gameID);
     }
 
     @Override
     public boolean gameExists(int gameID) {
-        for (GameData game : games) {
-            if (game.gameID() == gameID) {
-                return true;
-            }
-        }
-        return false;
+        return games.stream().anyMatch(game -> game.gameID() == gameID);
     }
 
     @Override
-    public void updateGame(GameData game){
-        try{
-            games.remove(getGame(game.gameID()));
-            games.add(game);
-        }catch(DataAccessException e){
-            games.add(game);
-        }
+    public void updateGame(GameData game) {
+        games.removeIf(g -> g.gameID() == game.gameID());
+        games.add(game);
     }
+
     @Override
     public void clear() {
-        games = HashSet.newHashSet(16);
+        games.clear();
+    }
+
+    // Additional utility methods
+
+    public int getGameCount() {
+        return games.size();
+    }
+
+    public boolean isEmpty() {
+        return games.isEmpty();
     }
 }
