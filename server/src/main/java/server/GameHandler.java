@@ -42,32 +42,18 @@ public class GameHandler {
             throw new BadRequestException("No gameID provided");
         }
 
-        try {
-            String authToken = req.headers("authorization");
-            record JoinGameData(String playerColor, int gameID) {}
-            JoinGameData joinData = new Gson().fromJson(req.body(), JoinGameData.class);
-            int joinStatus =  gameService.joinGame(authToken, joinData.gameID(), joinData.playerColor());
-            if (joinStatus == 0) {
-                resp.status(200);
-                return "{}";
-            } else if (joinStatus == 1) {
-                resp.status(400);
-                return "{ \"message\": \"Error: bad request\" }";
-            } else if (joinStatus == 2) {
-                resp.status(403);
-                return "{ \"message\": \"Error: already taken\" }";
-            }
-            resp.status(200);
-            return "{}";
-        } catch (DataAccessException e) {
-            resp.status(400);
-            return "{ \"message\": \"Error: bad request\" }";
-        } catch (UnauthorizedException e) {
-            resp.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
-        } catch (Exception e) {
-            resp.status(500);
-            return "{ \"message\": \"Error: %s\" }".formatted(e.getMessage());
+        String authToken = req.headers("authorization");
+        record JoinGameData(String playerColor, int gameID) {}
+        JoinGameData joinData = new Gson().fromJson(req.body(), JoinGameData.class);
+        boolean joinSuccess =  gameService.joinGame(authToken, joinData.gameID(), joinData.playerColor());
+
+
+        if (!joinSuccess) {
+            resp.status(403);
+            return "{ \"message\": \"Error: already taken\" }";
         }
+
+        resp.status(200);
+        return "{}";
     }
 }

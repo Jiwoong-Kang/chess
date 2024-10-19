@@ -1,8 +1,5 @@
 package service;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.UnauthorizedException;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import java.util.HashSet;
@@ -19,13 +16,21 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
-    public HashSet<GameData> listGames(String authToken) throws DataAccessException {
-        authDAO.getAuth(authToken); // throws if not authorized
+    public HashSet<GameData> listGames(String authToken) throws UnauthorizedException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
         return gameDAO.listGames();
     }
 
-    public int createGame(String authToken) throws DataAccessException {
-        authDAO.getAuth(authToken);
+    public int createGame(String authToken) throws UnauthorizedException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException();
+        }
 
         int gameID;
 
@@ -38,33 +43,35 @@ public class GameService {
         return gameID;
     }
 
-    public int joinGame(String authToken, int gameID, String color) throws UnauthorizedException, DataAccessException {
+    public boolean joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException {
         AuthData authData;
         GameData gameData;
 
         try {
             authData = authDAO.getAuth(authToken);
         } catch (DataAccessException e) {
-            throw new UnauthorizedException("Invalid authToken");
+            throw new UnauthorizedException();
         }
 
-        if (gameDAO.gameExists(gameID)) {
+        try {
             gameData = gameDAO.getGame(gameID);
-        } else return 1;
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
 
         String whiteUser = gameData.whiteUsername();
         String blackUser = gameData.blackUsername();
 
         if (Objects.equals(color, "WHITE")) {
-            if (whiteUser != null) return 2;
+            if (whiteUser != null) return false;
             else whiteUser = authData.username();
         } else if (Objects.equals(color, "BLACK")) {
-            if (blackUser != null) return 2;
+            if (blackUser != null) return false;
             else blackUser = authData.username();
-        } else if (color != null) return 1;
+        } else if (color != null) throw new BadRequestException("%s is not a valid team color".formatted(color));
 
         gameDAO.updateGame(new GameData(gameID, whiteUser, blackUser, gameData.gameName(), gameData.game()));
-        return 0;
+        return true;
     }
 
 

@@ -2,6 +2,8 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataAccess.DataAccessException;
+import dataAccess.BadRequestException;
+import dataAccess.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 import service.UserService;
@@ -13,54 +15,35 @@ public class UserHandler {
     public UserHandler(UserService userService) {
         this.userService = userService;
     }
-    public Object register(Request req, Response resp) {
-        try {
-            UserData userData = new Gson().fromJson(req.body(), UserData.class);
-            AuthData authData = userService.createUser(userData);
-            if (authData == null) {
-                resp.status(400);
-                return "{ \"message\": \"Error: bad request\" }";
-            } else {
-                resp.status(200);
-                return new Gson().toJson(authData);
-            }
-        } catch (DataAccessException e) {
-            resp.status(403);
-            return "{ \"message\": \"Error: already taken\" }";
-        } catch (JsonSyntaxException e) {
-            resp.status(400);
-            return "{ \"message\": \"Error: bad request\" }";
-        } catch (Exception e) {
-            resp.status(500);
-            return "{ \"message\": \"Error: %s\" }".formatted(e.getMessage());
+    public Object register(Request req, Response resp) throws BadRequestException{
+        UserData userData = new Gson().fromJson(req.body(), UserData.class);
+
+        if (userData.username() == null || userData.password() == null) {
+            throw new BadRequestException("No username and/or password given");
         }
-    }
-    public Object login(Request req, Response resp) {
+
         try {
-            UserData userData = new Gson().fromJson(req.body(), UserData.class);
-            AuthData authData = userService.loginUser(userData);
+            AuthData authData = userService.createUser(userData);
             resp.status(200);
             return new Gson().toJson(authData);
-        } catch (DataAccessException e) {
-            resp.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
-        } catch (Exception e) {
-            resp.status(500);
-            return "{ \"message\": \"Error: %s\" }".formatted(e.getMessage());
+        } catch (BadRequestException e) {
+            resp.status(403);
+            return "{ \"message\": \"Error: already taken\" }";
         }
     }
-    public Object logout(Request req, Response resp) {
-        try {
-            String authToken = req.headers("authorization");
-            userService.logoutUser(authToken);
-            resp.status(200);
-            return "{}";
-        } catch (DataAccessException e) {
-            resp.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
-        } catch (Exception e) {
-            resp.status(500);
-            return "{ \"message\": \"Error: %s\" }".formatted(e.getMessage());
-        }
+
+    public Object login(Request req, Response resp) throws UnauthorizedException, BadRequestException {
+        UserData userData = new Gson().fromJson(req.body(), UserData.class);
+        AuthData authData = userService.loginUser(userData);
+
+        resp.status(200);
+        return new Gson().toJson(authData);
+    }
+
+    public Object logout(Request req, Response resp) throws UnauthorizedException {
+        String authToken = req.headers("authorization");
+        userService.logoutUser(authToken);
+        resp.status(200);
+        return "{}";
     }
 }
