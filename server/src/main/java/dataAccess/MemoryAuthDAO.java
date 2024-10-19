@@ -13,11 +13,6 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void addAuth(String authToken, String username) {
-        dateBase.add(new AuthData(username, authToken));
-    }
-
-    @Override
     public void addAuth(AuthData authData) {
         dateBase.add(authData);
     }
