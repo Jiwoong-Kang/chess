@@ -36,6 +36,19 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
+    public void createUser(UserData user) throws DataAccessException {
+        try {
+            getUser(user.username());
+        }
+        catch (DataAccessException e) {
+            userCollection.add(user);
+            return;
+        }
+        throw new DataAccessException("User already exists: " + user.username());
+    }
+
+
+    @Override
     public boolean authenticateUser(String username, String password) throws DataAccessException {
         boolean userExists = false;
         for (UserData user : userCollection) {

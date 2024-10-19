@@ -2,7 +2,7 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.*;
 import service.GameService;
-import service.UserAuthService;
+import service.UserService;
 import spark.*;
 
 public class Server {
@@ -10,10 +10,10 @@ public class Server {
     AuthDAO authDAO;
     GameDAO gameDAO;
 
-    UserAuthService userAuthService;
+    UserService userService;
     GameService gameService;
 
-    UserAuthHandler userAuthHandler;
+    UserHandler userHandler;
     GameHandler gameHandler;
 
     public Server() {
@@ -21,10 +21,10 @@ public class Server {
         authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
 
-        userAuthService = new UserAuthService(userDAO, authDAO);
-        gameService = new GameService(gameDAO);
+        userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
-        userAuthHandler = new UserAuthHandler(userAuthService);
+        userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
     }
     public int run(int desiredPort) {
@@ -32,8 +32,13 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.post("/user", userAuthHandler::register);
         Spark.delete("/db", this::clear);
+        Spark.post("/user", userHandler::register);
+        Spark.post("/session", userHandler::login);
+        Spark.delete("/session", userHandler::logout);
+        Spark.get("/game", gameHandler::listGames);
+        Spark.post("/game", gameHandler::createGame);
+        Spark.put("/game", gameHandler::joinGame);
 
         // Register your endpoints and handle exceptions here.
 
@@ -51,7 +56,7 @@ public class Server {
 
     private Object clear(Request req, Response resp) {
         try {
-            userAuthService.clear();
+            userService.clear();
             gameService.clear();
             resp.status(200);
             return "{}";

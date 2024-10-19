@@ -6,22 +6,27 @@ import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    HashSet<AuthData> AuthData;
+    HashSet<AuthData> dateBase;
 
     public MemoryAuthDAO() {
-        AuthData = HashSet.newHashSet(16);
+        dateBase = HashSet.newHashSet(16);
     }
 
     @Override
     public void addAuth(String authToken, String username) {
-        AuthData.add(new AuthData(username, authToken));
+        dateBase.add(new AuthData(username, authToken));
+    }
+
+    @Override
+    public void addAuth(AuthData authData) {
+        dateBase.add(authData);
     }
 
     @Override
     public void deleteAuth(String authToken) {
-        for (AuthData authData : AuthData) {
+        for (AuthData authData : dateBase) {
             if (authData.authToken().equals(authToken)) {
-                AuthData.remove(authData);
+                dateBase.remove(authData);
                 break;
             }
         }
@@ -29,7 +34,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        for (AuthData authData : AuthData) {
+        for (AuthData authData : dateBase) {
             if (authData.authToken().equals(authToken)) {
                 return authData;
             }
@@ -39,7 +44,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public void clear() {
-        AuthData = HashSet.newHashSet(16);
+        dateBase = HashSet.newHashSet(16);
     }
 
 }

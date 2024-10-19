@@ -15,20 +15,18 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public HashSet<GameData> listGames(String username) {
-        HashSet<GameData> games = HashSet.newHashSet(16);
-        for (GameData game : this.games) {
-            if (game.whiteUsername().equals(username) ||
-                    game.blackUsername().equals(username)) {
-                games.add(game);
-            }
-        }
+    public HashSet<GameData> listGames(){
         return games;
     }
 
     @Override
     public void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
         games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+    }
+
+    @Override
+    public void createGame(GameData game){
+        games.add(game);
     }
 
     @Override
@@ -41,6 +39,25 @@ public class MemoryGameDAO implements GameDAO {
         throw new DataAccessException("Game not found, id: " +gameID);
     }
 
+    @Override
+    public boolean gameExists(int gameID) {
+        for (GameData game : games) {
+            if (game.gameID() == gameID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void updateGame(GameData game){
+        try{
+            games.remove(getGame(game.gameID()));
+            games.add(game);
+        }catch(DataAccessException e){
+            games.add(game);
+        }
+    }
     @Override
     public void clear() {
         games = HashSet.newHashSet(16);
