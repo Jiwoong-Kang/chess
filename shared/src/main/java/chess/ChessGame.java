@@ -145,18 +145,21 @@ public class ChessGame {
     private boolean canAnyEnemyPieceReachPosition(TeamColor teamColor, ChessPosition targetPosition) {
         for (int y = 1; y <= 8; y++) {
             for (int x = 1; x <= 8; x++) {
-                ChessPosition position = new ChessPosition(y, x);
-                ChessPiece piece = board.getPiece(position);
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    for (ChessMove move : piece.pieceMoves(board, position)) {
-                        if (move.getEndPosition().equals(targetPosition)) {
-                            return true;
-                        }
-                    }
+                if (canEnemyPieceAtPositionReachTarget(teamColor, new ChessPosition(y, x), targetPosition)) {
+                    return true;
                 }
             }
         }
         return false;
+    }
+
+    private boolean canEnemyPieceAtPositionReachTarget(TeamColor teamColor, ChessPosition position, ChessPosition targetPosition) {
+        ChessPiece piece = board.getPiece(position);
+        if (piece == null || piece.getTeamColor() == teamColor) {
+            return false;
+        }
+        return piece.pieceMoves(board, position).stream()
+                .anyMatch(move -> move.getEndPosition().equals(targetPosition));
     }
 
     /**

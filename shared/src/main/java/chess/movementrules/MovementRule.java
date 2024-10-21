@@ -43,7 +43,9 @@ public interface MovementRule {
 
     // StaticMoves like knight or king
 
-    static HashSet<ChessMove> directionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
+    static HashSet<ChessMove> directionalMoves(ChessBoard board, ChessPosition currPosition,
+                                               int[][] moveDirections, int currY, int currX,
+                                               ChessGame.TeamColor teamColor) {
         HashSet<ChessMove> moves = new HashSet<>();
         for (int[] direction : moveDirections) {
             boolean problems = false;

@@ -43,7 +43,9 @@ public class GameHandler {
         if (joinRequest.gameID == 0) {
             throw new BadRequestException("No gameID provided");
         }
-        if (joinRequest.playerColor == null || (!joinRequest.playerColor.equalsIgnoreCase("WHITE") && !joinRequest.playerColor.equalsIgnoreCase("BLACK"))) {
+        if (joinRequest.playerColor == null
+                || (!joinRequest.playerColor.equalsIgnoreCase("WHITE")
+                && !joinRequest.playerColor.equalsIgnoreCase("BLACK"))) {
             throw new BadRequestException("Invalid player color");
         }
 
