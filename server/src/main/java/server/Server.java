@@ -30,7 +30,6 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        Spark.init();
 
         Spark.delete("/db", this::clear);
         Spark.post("/user", userHandler::register);
