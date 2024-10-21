@@ -16,7 +16,7 @@ public class RookMovementRule implements MovementRule {
 
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
-        return MovementRule.DirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
+        return MovementRule.directionalMoves(board, currentPosition, moveDirections, currY, currX, team);
     }
     // used static to call directly like RookMovementRule.getMoves(board, position)
 }

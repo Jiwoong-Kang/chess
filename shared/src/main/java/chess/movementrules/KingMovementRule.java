@@ -10,6 +10,6 @@ public class KingMovementRule implements MovementRule {
 
     public static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition) {
         int[][] possibleMoves = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-        return MovementRule.StaticMoves(currentPosition, possibleMoves, board);
+        return MovementRule.staticMoves(currentPosition, possibleMoves, board);
     }
 }

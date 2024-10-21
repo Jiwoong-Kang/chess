@@ -11,9 +11,9 @@ public class PawnMovementRule implements MovementRule {
         int direction = (teamColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
         boolean canPromote = canPromote(currentPosition, teamColor);
 
-        ForwardMoves(board, currentPosition, direction, canPromote, moves);
-        AttackMoves(board, currentPosition, direction, canPromote, moves);
-        DoubleMoveIfPossible(board, currentPosition, direction, moves);
+        forwardMoves(board, currentPosition, direction, canPromote, moves);
+        attackMoves(board, currentPosition, direction, canPromote, moves);
+        doubleMoveIfPossible(board, currentPosition, direction, moves);
 
         return moves;
     }
@@ -23,14 +23,14 @@ public class PawnMovementRule implements MovementRule {
                 (teamColor == ChessGame.TeamColor.BLACK && position.getRow() == 2);
     }
 
-    private static void ForwardMoves(ChessBoard board, ChessPosition currentPosition, int direction, boolean canPromote, HashSet<ChessMove> moves) {
+    private static void forwardMoves(ChessBoard board, ChessPosition currentPosition, int direction, boolean canPromote, HashSet<ChessMove> moves) {
         ChessPosition forwardPosition = new ChessPosition(currentPosition.getRow() + direction, currentPosition.getColumn());
         if (MovementRule.inSquare(forwardPosition) && board.getPiece(forwardPosition) == null) {
-            MoveWithPossiblePromotion(currentPosition, forwardPosition, canPromote, moves);
+            moveWithPossiblePromotion(currentPosition, forwardPosition, canPromote, moves);
         }
     }
 
-    private static void AttackMoves(ChessBoard board, ChessPosition currentPosition, int direction, boolean canPromote, HashSet<ChessMove> moves) {
+    private static void attackMoves(ChessBoard board, ChessPosition currentPosition, int direction, boolean canPromote, HashSet<ChessMove> moves) {
         int[] attackColumns = {-1, 1};
         for (int columnOffset : attackColumns) {
             ChessPosition attackPosition = new ChessPosition(
@@ -40,12 +40,12 @@ public class PawnMovementRule implements MovementRule {
             if (MovementRule.inSquare(attackPosition) &&
                     board.getPiece(attackPosition) != null &&
                     board.getTeamOfSquare(attackPosition) != board.getTeamOfSquare(currentPosition)) {
-                MoveWithPossiblePromotion(currentPosition, attackPosition, canPromote, moves);
+                moveWithPossiblePromotion(currentPosition, attackPosition, canPromote, moves);
             }
         }
     }
 
-    private static void DoubleMoveIfPossible(ChessBoard board, ChessPosition currentPosition, int direction, HashSet<ChessMove> moves) {
+    private static void doubleMoveIfPossible(ChessBoard board, ChessPosition currentPosition, int direction, HashSet<ChessMove> moves) {
         boolean isInitialPosition = (direction == 1 && currentPosition.getRow() == 2) ||
                 (direction == -1 && currentPosition.getRow() == 7);
         if (isInitialPosition) {
@@ -59,7 +59,7 @@ public class PawnMovementRule implements MovementRule {
         }
     }
 
-    private static void MoveWithPossiblePromotion(ChessPosition from, ChessPosition to, boolean canPromote, HashSet<ChessMove> moves) {
+    private static void moveWithPossiblePromotion(ChessPosition from, ChessPosition to, boolean canPromote, HashSet<ChessMove> moves) {
         if (canPromote) {
             for (ChessPiece.PieceType promotionPiece : new ChessPiece.PieceType[]{
                     ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,

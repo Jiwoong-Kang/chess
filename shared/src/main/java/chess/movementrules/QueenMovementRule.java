@@ -16,6 +16,6 @@ public class QueenMovementRule implements MovementRule {
 
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
-        return MovementRule.DirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
+        return MovementRule.directionalMoves(board, currentPosition, moveDirections, currY, currX, team);
     }
 }
