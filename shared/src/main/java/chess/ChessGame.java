@@ -122,7 +122,9 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPos = findKingPosition(teamColor);
-        if (kingPos == null) return false;
+        if (kingPos == null) {
+            return false;
+        }
 
         return canAnyEnemyPieceReachPosition(teamColor, kingPos);
     }
@@ -164,7 +166,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
 
-    private boolean NoValidMove(TeamColor teamColor) {
+    private boolean novalidmove(TeamColor teamColor) {
         for (int y = 1; y <= 8; y++){
             for (int x = 1; x <= 8; x++) {
                 ChessPosition currentPosition = new ChessPosition(y, x);
@@ -184,7 +186,7 @@ public class ChessGame {
 
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor) && NoValidMove(teamColor);
+        return isInCheck(teamColor) && novalidmove(teamColor);
     }
 
     /**
@@ -195,7 +197,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return !isInCheck(teamColor) && NoValidMove(teamColor);
+        return !isInCheck(teamColor) && novalidmove(teamColor);
     }
 
     /**
@@ -226,8 +228,12 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessGame chessGame = (ChessGame) o;
         return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
     }

@@ -1,4 +1,4 @@
-package dataAccess;
+package dataaccess;
 
 import model.AuthData;
 
@@ -39,18 +39,18 @@ public class MemoryAuthDAO implements AuthDAO {
 
     // Additional utility methods
 
-    public boolean containsAuthToken(String authToken) {
-        for (AuthData authData : database) {
-            if (authData.authToken().equals(authToken)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int getAuthCount() {
-        return database.size();
-    }
+//    public boolean containsAuthToken(String authToken) {
+//        for (AuthData authData : database) {
+//            if (authData.authToken().equals(authToken)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    public int getAuthCount() {
+//        return database.size();
+//    }
 
     public boolean isEmpty() {
         return database.isEmpty();

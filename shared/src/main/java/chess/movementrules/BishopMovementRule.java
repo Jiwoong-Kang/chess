@@ -1,4 +1,4 @@
-package chess.MovementRules;
+package chess.movementrules;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -16,6 +16,6 @@ public class BishopMovementRule implements MovementRule {
 
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
-        return MovementRule.generateDirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
+        return MovementRule.DirectionalMoves(board, currentPosition, moveDirections, currY, currX, team);
     }
 }

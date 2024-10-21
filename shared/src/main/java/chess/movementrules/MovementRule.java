@@ -1,4 +1,4 @@
-package chess.MovementRules;
+package chess.movementrules;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -20,7 +20,7 @@ public interface MovementRule {
 
     // see if wanted location is on the board, or the outside of the board
 
-    static HashSet<ChessMove> generateStaticMoves(ChessPosition currentPosition, int[][] possibleMoves, ChessBoard board) {
+    static HashSet<ChessMove> StaticMoves(ChessPosition currentPosition, int[][] possibleMoves, ChessBoard board) {
         HashSet<ChessMove> moves = new HashSet<>();
         ChessGame.TeamColor team = board.getTeamOfSquare(currentPosition);
 
@@ -43,7 +43,7 @@ public interface MovementRule {
 
     // StaticMoves like knight or king
 
-    static HashSet<ChessMove> generateDirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
+    static HashSet<ChessMove> DirectionalMoves(ChessBoard board, ChessPosition currPosition, int[][] moveDirections, int currY, int currX, ChessGame.TeamColor teamColor) {
         HashSet<ChessMove> moves = new HashSet<>();
         for (int[] direction : moveDirections) {
             boolean problems = false;

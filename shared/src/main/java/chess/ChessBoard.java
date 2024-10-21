@@ -43,7 +43,9 @@ public class ChessBoard {
         if (getPiece(position) != null) {
             return getPiece(position).getTeamColor();
         }
-        else return null;
+        else {
+            return null;
+        }
     }
     // Bring the teamcolor from ChessGame.java to decide the teamcolor.
     // it returns the color of the selected piece
@@ -107,8 +109,12 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(boardForm, that.boardForm);
     }

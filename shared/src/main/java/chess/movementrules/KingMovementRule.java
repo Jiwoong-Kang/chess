@@ -1,4 +1,4 @@
-package chess.MovementRules;
+package chess.movementrules;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -10,6 +10,6 @@ public class KingMovementRule implements MovementRule {
 
     public static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition) {
         int[][] possibleMoves = {{-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}};
-        return MovementRule.generateStaticMoves(currentPosition, possibleMoves, board);
+        return MovementRule.StaticMoves(currentPosition, possibleMoves, board);
     }
 }
