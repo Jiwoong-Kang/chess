@@ -16,7 +16,7 @@ public class Server {
     GameHandler gameHandler;
 
     public Server() {
-        userDAO = new MemoryUserDAO();
+        userDAO = new SQLUserDAO();
         authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
 
