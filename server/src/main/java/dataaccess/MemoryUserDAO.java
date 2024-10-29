@@ -41,8 +41,6 @@ public class MemoryUserDAO implements UserDAO {
         userCollection.clear();
     }
 
-    // Additional utility methods
-
     private boolean userExists(String username) {
         return userCollection.stream().anyMatch(user -> user.username().equals(username));
     }

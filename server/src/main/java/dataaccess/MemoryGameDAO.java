@@ -48,8 +48,6 @@ public class MemoryGameDAO implements GameDAO {
         games.clear();
     }
 
-    // Additional utility methods
-
     public int getGameCount() {
         return games.size();
     }
