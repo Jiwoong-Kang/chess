@@ -8,6 +8,8 @@ import model.UserData;
 import service.UserService;
 import spark.Request;
 import spark.Response;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserHandler {
     private final UserService userService;
