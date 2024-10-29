@@ -1,10 +1,8 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashSet;
 
 public class SQLAuthDAO implements AuthDAO {
     public SQLAuthDAO() {
@@ -12,7 +10,6 @@ public class SQLAuthDAO implements AuthDAO {
             throw new RuntimeException(ex);
         }
         try (var conn = DatabaseManager.getConnection()) {
-            conn.setCatalog("chess");
             var createTestTable = """            
                     CREATE TABLE if NOT EXISTS auth (
                                     username VARCHAR(255) NOT NULL,
@@ -36,7 +33,7 @@ public class SQLAuthDAO implements AuthDAO {
                 statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            return;
+            return ;
         }
     }
     @Override

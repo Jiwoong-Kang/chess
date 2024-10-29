@@ -1,13 +1,8 @@
 package dataaccess;
 
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.xml.crypto.Data;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashSet;
 
 public class SQLUserDAO implements UserDAO {
     public SQLUserDAO() {
@@ -15,7 +10,6 @@ public class SQLUserDAO implements UserDAO {
             throw new RuntimeException(ex);
         }
         try (var conn = DatabaseManager.getConnection()) {
-            conn.setCatalog("chess");
             var createTestTable = """            
                     CREATE TABLE if NOT EXISTS user (
                                     username VARCHAR(255) NOT NULL,
