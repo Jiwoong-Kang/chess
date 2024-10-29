@@ -50,7 +50,7 @@ public class SQLUserDAO implements UserDAO {
             try (var statement = conn.prepareStatement
                     ("INSERT INTO user (username, password, email) VALUES(?, ?, ?)")) {
                 statement.setString(1, user.username());
-                statement.setString(2, user.password());
+                statement.setString(2,hashPassword(user.password()));
                 statement.setString(3, user.email());
                 statement.executeUpdate();
             }
