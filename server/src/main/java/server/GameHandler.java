@@ -37,7 +37,6 @@ public class GameHandler {
     }
 
     public Object joinGame(Request req, Response resp) throws BadRequestException, UnauthorizedException {
-
         if (!req.body().contains("\"gameID\":")) {
             throw new BadRequestException("No gameID provided");
         }
@@ -45,7 +44,13 @@ public class GameHandler {
         String authToken = req.headers("authorization");
         record JoinGameData(String playerColor, int gameID) {}
         JoinGameData joinData = new Gson().fromJson(req.body(), JoinGameData.class);
-        boolean joinSuccess =  gameService.joinGame(authToken, joinData.gameID(), joinData.playerColor());
+
+        // Check if playerColor is null or empty
+        if (joinData.playerColor() == null || joinData.playerColor().isEmpty()) {
+            throw new BadRequestException("No playerColor provided");
+        }
+
+        boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID(), joinData.playerColor());
 
         if (!joinSuccess) {
             resp.status(403);
