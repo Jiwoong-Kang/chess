@@ -1,9 +1,8 @@
-package dataAccessTests;
+package dataaccess;
 
 import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.*;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
