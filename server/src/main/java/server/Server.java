@@ -25,6 +25,10 @@ public class Server {
 
         userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
+
+        try { DatabaseManager.createDatabase(); } catch (DataAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     public int run(int desiredPort) {
         Spark.port(desiredPort);
