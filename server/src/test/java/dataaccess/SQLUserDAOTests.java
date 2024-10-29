@@ -5,30 +5,53 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SQLUserDAOTest {
 
-    UserDAO dao;
-    UserData defaultUser;
+    private UserDAO dao;
+    private UserData defaultUser;
+
     @BeforeEach
     void setUp() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
         dao = new SQLUserDAO();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("TRUNCATE user")) {
-                statement.executeUpdate();
-            }
-        }
+        truncateUserTable();
         defaultUser = new UserData("username", "password", "email");
     }
+
     @AfterEach
     void tearDown() throws SQLException, DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("TRUNCATE user")) {
-                statement.executeUpdate();
+        truncateUserTable();
+    }
+
+    private void truncateUserTable() throws SQLException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement("TRUNCATE user")) {
+            statement.executeUpdate();
+        }
+    }
+
+    private UserData getUserFromDatabase(String username) throws SQLException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement
+                     ("SELECT username, password, email FROM user WHERE username=?")) {
+            statement.setString(1, username);
+            try (ResultSet results = statement.executeQuery()) {
+                if (results.next()) {
+                    return new UserData(
+                            results.getString("username"),
+                            results.getString("password"),
+                            results.getString("email")
+                    );
+                }
+                return null;
             }
         }
     }
@@ -36,29 +59,24 @@ class SQLUserDAOTest {
     @Test
     void createUserPositive() throws DataAccessException, SQLException {
         dao.createUser(defaultUser);
-        String resultUsername;
-        String resultPassword;
-        String resultEmail;
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, password, email FROM user WHERE username=?")) {
-                statement.setString(1, defaultUser.username());
-                try (var results = statement.executeQuery()) {
-                    results.next();
-                    resultUsername = results.getString("username");
-                    resultPassword = results.getString("password");
-                    resultEmail = results.getString("email");
-                }
-            }
-        }
-        assertEquals(defaultUser.username(), resultUsername);
-        assertTrue(passwordMatches(defaultUser.password(), resultPassword));
-        assertEquals(defaultUser.email(), resultEmail);
+        UserData resultUser = getUserFromDatabase(defaultUser.username());
+        assertNotNull(resultUser, "User should exist in database");
+        assertEquals(defaultUser.username(), resultUser.username());
+        assertTrue(passwordMatches(defaultUser.password(), resultUser.password()));
+        assertEquals(defaultUser.email(), resultUser.email());
+    }
+
+    @Test
+    void createUserNegative() throws DataAccessException {
+        dao.createUser(defaultUser);
+        assertThrows(DataAccessException.class, () -> dao.createUser(defaultUser));
     }
 
     @Test
     void getUserPositive() throws DataAccessException {
         dao.createUser(defaultUser);
         UserData resultUser = dao.getUser(defaultUser.username());
+        assertNotNull(resultUser, "User should be retrieved");
         assertEquals(defaultUser.username(), resultUser.username());
         assertTrue(passwordMatches(defaultUser.password(), resultUser.password()));
         assertEquals(defaultUser.email(), resultUser.email());
@@ -74,24 +92,20 @@ class SQLUserDAOTest {
         dao.createUser(defaultUser);
         assertTrue(dao.authenticateUser(defaultUser.username(), defaultUser.password()));
     }
+
     @Test
     void authenticateUserNegative() throws DataAccessException {
         dao.createUser(defaultUser);
         assertFalse(dao.authenticateUser(defaultUser.username(), "badPass"));
     }
+
     @Test
     void clear() throws DataAccessException, SQLException {
         dao.createUser(defaultUser);
         dao.clear();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, password, email FROM user WHERE username=?")) {
-                statement.setString(1, defaultUser.username());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
-                }
-            }
-        }
+        assertNull(getUserFromDatabase(defaultUser.username()), "User should not exist after clear");
     }
+
     private boolean passwordMatches(String rawPassword, String hashedPassword) {
         return BCrypt.checkpw(rawPassword, hashedPassword);
     }

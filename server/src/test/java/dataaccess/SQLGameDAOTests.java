@@ -8,58 +8,80 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SQLGameDAOTest {
 
-    GameDAO dao;
-    GameData defaultGameData;
+    private GameDAO dao;
+    private GameData defaultGameData;
+
     @BeforeEach
     void setUp() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
         dao = new SQLGameDAO();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("TRUNCATE game")) {
-                statement.executeUpdate();
-            }
-        }
+        truncateGameTable();
         ChessGame defaultChessGame = new ChessGame();
         ChessBoard board = new ChessBoard();
         board.resetBoard();
         defaultChessGame.setBoard(board);
-        defaultGameData = new GameData(1234, "white", "black", "gamename", defaultChessGame);
+        defaultGameData = new GameData
+                (1234, "white", "black", "gamename", defaultChessGame);
     }
 
     @AfterEach
     void tearDown() throws SQLException, DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("TRUNCATE game")) {
-                statement.executeUpdate();
+        truncateGameTable();
+    }
+
+    private void truncateGameTable() throws SQLException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement("TRUNCATE game")) {
+            statement.executeUpdate();
+        }
+    }
+
+    private GameData getGameDataFromDatabase(int gameID) throws SQLException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement
+                     ("SELECT gameID, whiteUsername, blackUsername, " +
+                             "gameName, chessGame FROM game WHERE gameID=?")) {
+            statement.setInt(1, gameID);
+            try (ResultSet results = statement.executeQuery()) {
+                if (results.next()) {
+                    return new GameData(
+                            results.getInt("gameID"),
+                            results.getString("whiteUsername"),
+                            results.getString("blackUsername"),
+                            results.getString("gameName"),
+                            deserializeGame(results.getString("chessGame"))
+                    );
+                }
+                return null;
             }
+        }
+    }
+
+    private int getGameCount() throws SQLException, DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement("SELECT COUNT(*) FROM game");
+             ResultSet results = statement.executeQuery()) {
+            if (results.next()) {
+                return results.getInt(1);
+            }
+            return 0;
         }
     }
 
     @Test
     void createGamePositive() throws DataAccessException, SQLException {
         dao.createGame(defaultGameData);
-        GameData resultGameData;
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game WHERE gameID=?")) {
-                statement.setInt(1, defaultGameData.gameID());
-                try (var results = statement.executeQuery()) {
-                    results.next();
-                    var gameID = results.getInt(("gameID"));
-                    var whiteUsername = results.getString("whiteUsername");
-                    var blackUsername = results.getString("blackUsername");
-                    var gameName = results.getString("gameName");
-                    var chessGame = deserializeGame(results.getString("chessGame"));
-                    assertEquals(defaultGameData.game(), chessGame, "Game board is not equal");
-                    resultGameData = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
-                }
-            }
-        }
+        GameData resultGameData = getGameDataFromDatabase(defaultGameData.gameID());
+        assertNotNull(resultGameData, "Game data should not be null");
         assertEquals(defaultGameData, resultGameData);
     }
 
@@ -72,17 +94,10 @@ class SQLGameDAOTest {
     @Test
     void listGamesPositive() throws DataAccessException, SQLException {
         dao.createGame(defaultGameData);
-        dao.createGame(new GameData(2345, "white", "black", "gamename", new ChessGame()));
+        dao.createGame(new GameData
+                (2345, "white", "black", "gamename", new ChessGame()));
         HashSet<GameData> resultGames = dao.listGames();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game")) {
-                try (var results = statement.executeQuery()) {
-                    int i = 0;
-                    while(results.next()) { i++; }
-                    assertEquals(i, resultGames.size(), "Improper game count in list");
-                }
-            }
-        }
+        assertEquals(getGameCount(), resultGames.size(), "Improper game count in list");
     }
 
     @Test
@@ -101,39 +116,40 @@ class SQLGameDAOTest {
     void getGameNegative() {
         assertThrows(DataAccessException.class, () -> dao.getGame(defaultGameData.gameID()));
     }
+
     @Test
     void gameExistsPositive() throws DataAccessException {
         dao.createGame(defaultGameData);
         assertTrue(dao.gameExists(defaultGameData.gameID()));
     }
+
     @Test
     void gameExistsNegative() {
         assertFalse(dao.gameExists(defaultGameData.gameID()));
     }
+
     @Test
     void updateGamePositive() throws DataAccessException {
         dao.createGame(defaultGameData);
-        GameData updatedGame = new GameData(defaultGameData.gameID(), "newWhite", "black", "gamename", defaultGameData.game());
+        GameData updatedGame = new GameData
+                (defaultGameData.gameID(), "newWhite", "black",
+                        "gamename", defaultGameData.game());
         dao.updateGame(updatedGame);
         assertEquals(updatedGame, dao.getGame(defaultGameData.gameID()));
     }
+
     @Test
     void updateGameNegative() {
         assertThrows(DataAccessException.class, () -> dao.updateGame(defaultGameData));
     }
+
     @Test
     void clear() throws DataAccessException, SQLException {
         dao.createGame(defaultGameData);
         dao.clear();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID FROM game WHERE gameID=?")) {
-                statement.setInt(1, defaultGameData.gameID());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
-                }
-            }
-        }
+        assertNull(getGameDataFromDatabase(defaultGameData.gameID()), "Game should not exist after clear");
     }
+
     private ChessGame deserializeGame(String serializedGame) {
         return new Gson().fromJson(serializedGame, ChessGame.class);
     }

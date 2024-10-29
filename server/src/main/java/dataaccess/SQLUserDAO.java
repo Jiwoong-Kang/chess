@@ -2,7 +2,6 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
