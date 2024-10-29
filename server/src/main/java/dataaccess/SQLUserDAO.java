@@ -1,7 +1,8 @@
 package dataaccess;
 
 import model.UserData;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
@@ -74,11 +75,10 @@ public class SQLUserDAO implements UserDAO {
     }
 
     private String hashPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
+       return BCrypt.hashpw(password, BCrypt.gensalt());
+
     }
     private boolean passwordMatches(String rawPassword, String hashedPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(rawPassword, hashedPassword);
+        return BCrypt.checkpw(rawPassword, hashedPassword);
     }
 }

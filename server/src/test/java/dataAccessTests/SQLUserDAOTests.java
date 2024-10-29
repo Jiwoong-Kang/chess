@@ -8,7 +8,8 @@ import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,7 +98,6 @@ class SQLUserDAOTest {
         }
     }
     private boolean passwordMatches(String rawPassword, String hashedPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(rawPassword, hashedPassword);
+        return BCrypt.checkpw(rawPassword, hashedPassword);
     }
 }
