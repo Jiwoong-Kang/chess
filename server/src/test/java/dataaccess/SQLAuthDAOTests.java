@@ -12,39 +12,49 @@ class SQLAuthDAOTest {
 
     AuthDAO dao;
     AuthData defaultAuth;
-    @BeforeEach
-        void setUp() throws DataAccessException, SQLException {
-            DatabaseManager.createDatabase();
-            dao = new SQLAuthDAO();
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var statement = conn.prepareStatement("TRUNCATE auth")) {
-                    statement.executeUpdate();
-                }
-            }
-            defaultAuth = new AuthData("username", "token");
-        }
 
-        @AfterEach
-        void tearDown() throws SQLException, DataAccessException {
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var statement = conn.prepareStatement("TRUNCATE auth")) {
-                    statement.executeUpdate();
-                }
+    @BeforeEach
+    void setUp() throws DataAccessException, SQLException {
+        DatabaseManager.createDatabase();
+        dao = new SQLAuthDAO();
+        truncateAuthTable();
+        defaultAuth = new AuthData("username", "token");
+    }
+
+    @AfterEach
+    void tearDown() throws SQLException, DataAccessException {
+        truncateAuthTable();
+    }
+
+    private void truncateAuthTable() throws SQLException, DataAccessException {
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement("TRUNCATE auth")) {
+            statement.executeUpdate();
+        }
+    }
+
+    private boolean isAuthDataPresent(String username) throws SQLException, DataAccessException {
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
+            statement.setString(1, username);
+            try (var results = statement.executeQuery()) {
+                return results.next();
             }
         }
+    }
+
     @Test
     void addAuthPositive() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
         String resultUsername;
         String resultToken;
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    results.next();
-                    resultUsername = results.getString("username");
-                    resultToken = results.getString("authToken");
-                }
+        try (var conn = DatabaseManager.getConnection();
+             var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
+            statement.setString(1, defaultAuth.username());
+            try (var results = statement.executeQuery()) {
+                results.next();
+                resultUsername = results.getString("username");
+                resultToken = results.getString("authToken");
             }
         }
         assertEquals(defaultAuth, new AuthData(resultUsername, resultToken));
@@ -54,33 +64,19 @@ class SQLAuthDAOTest {
     void addAuthNegative() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
         dao.addAuth(defaultAuth);
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    results.next();
-                    assertFalse(results.next()); //There should only be one element, despite having added two
-                }
-            }
-        }
+        assertTrue(isAuthDataPresent(defaultAuth.username()));
+        assertFalse(isAuthDataPresent(defaultAuth.username() + "nonexistent"));
     }
+
     @Test
     void deleteAuthPositive() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
         dao.deleteAuth(defaultAuth.authToken());
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
-                }
-            }
-        }
+        assertFalse(isAuthDataPresent(defaultAuth.username()));
     }
 
     @Test
-    void deleteAuthNegative() throws DataAccessException, SQLException {
-        // If the given token does not exist, nothing should be thrown because "delete" is successful
+    void deleteAuthNegative() {
         assertDoesNotThrow(() -> dao.deleteAuth("badToken"));
     }
 
@@ -96,17 +92,11 @@ class SQLAuthDAOTest {
         dao.addAuth(defaultAuth);
         assertThrows(DataAccessException.class, () -> dao.getAuth("badToken"));
     }
+
     @Test
     void clear() throws DataAccessException, SQLException {
         dao.addAuth(defaultAuth);
         dao.clear();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE username=?")) {
-                statement.setString(1, defaultAuth.username());
-                try (var results = statement.executeQuery()) {
-                    assertFalse(results.next()); //There should be no elements
-                }
-            }
-        }
+        assertFalse(isAuthDataPresent(defaultAuth.username()));
     }
 }
