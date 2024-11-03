@@ -16,7 +16,7 @@ import java.util.Objects;
 public class serverFacade {
     String baseURL = "http://localhost:8080";
     String authToken;
-    serverFacade() {
+    public serverFacade() {
     }
     public boolean register(String username, String password, String email) {
         var body = Map.of("username", username, "password", password, "email", email);
@@ -46,11 +46,12 @@ public class serverFacade {
         authToken = null;
         return true;
     }
-    public boolean createGame(String gameName) {
+    public int createGame(String gameName) {
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/game", jsonBody);
-        return !resp.containsKey("Error");
+        double gameID = (double) resp.get("gameID");
+        return (int) gameID;
     }
 
     public List<GameData> listGames() {
@@ -63,14 +64,14 @@ public class serverFacade {
     public boolean joinGame(int gameId, String playerColor) {
         var body = Map.of("gameID", gameId, "playerColor", playerColor);
         var jsonBody = new Gson().toJson(body);
-        Map resp = request("Update", "/game", jsonBody);
+        Map resp = request("PUT", "/game", jsonBody);
         return !resp.containsKey("Error");
     }
-    public Map request (String method, String endpoint) {
+    private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
 
-    public Map request(String method, String endpoint, String body) {
+    private Map request(String method, String endpoint, String body) {
         Map respMap;
         try {
             URI uri = new URI(baseURL + endpoint);
