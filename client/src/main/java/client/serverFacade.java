@@ -16,6 +16,11 @@ public class serverFacade {
     String authToken;
     public serverFacade() {
     }
+
+    public serverFacade(String url) {
+        baseURL = url;
+    }
+
     public boolean register(String username, String password, String email) {
         var body = Map.of("username", username, "password", password, "email", email);
         var jsonBody = new Gson().toJson(body);
@@ -48,6 +53,9 @@ public class serverFacade {
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/game", jsonBody);
+        if (resp.containsKey("Error")) {
+            return -1;
+        }
         double gameID = (double) resp.get("gameID");
         return (int) gameID;
     }
@@ -144,11 +152,6 @@ public class serverFacade {
             return String.format("Error: %s", e.getMessage());
         }
         return resp;
-    }
-
-    private Map mapOf(String string) {
-        System.out.println(string);
-        return new Gson().fromJson(string, Map.class);
     }
 
     private String readerToString(InputStreamReader reader) {
