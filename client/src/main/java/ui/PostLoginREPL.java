@@ -2,20 +2,17 @@ package ui;
 
 import client.serverFacade;
 import model.GameData;
-import chess.ChessBoard;
-import chess.ChessGame;
-import ui.EscapeSequences.*;
 
 import java.util.*;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
-public class postLoginREPL {
+public class PostLoginREPL {
 
     private final serverFacade server;
     private List<GameData> games;
 
-    public postLoginREPL(serverFacade server) {
+    public PostLoginREPL(serverFacade server) {
         this.server = server;
         this.games = new ArrayList<>();
     }
@@ -27,7 +24,7 @@ public class postLoginREPL {
             String[] input = getUserInput();
             loggedIn = processCommand(input);
         }
-        new preLoginREPL(server).run();
+        new PreLoginREPL(server).run();
     }
 
     private boolean processCommand(String[] input) {
@@ -119,7 +116,7 @@ public class postLoginREPL {
         GameData joinGame = games.get(gameIndex);
         if (server.joinGame(joinGame.gameID(), color)) {
             out.println("You have joined the game");
-            new boardPrinter(joinGame.game().getBoard()).printBoard();
+            new BoardPrinter(joinGame.game().getBoard()).printBoard();
         } else {
             out.println("Game does not exist or color taken");
             printJoin();
@@ -130,7 +127,7 @@ public class postLoginREPL {
         GameData observeGame = games.get(gameIndex);
         if (server.joinGame(observeGame.gameID(), null)) {
             out.println("You have joined the game as an observer");
-            new boardPrinter(observeGame.game().getBoard()).printBoard();
+            new BoardPrinter(observeGame.game().getBoard()).printBoard();
         } else {
             out.println("Game does not exist");
             printObserve();

@@ -4,10 +4,10 @@ import chess.*;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
-public class boardPrinter {
+public class BoardPrinter {
     private final ChessBoard board;
 
-    public boardPrinter(ChessBoard board) {
+    public BoardPrinter(ChessBoard board) {
         this.board = board;
     }
 

@@ -6,13 +6,13 @@ import java.util.Scanner;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
-public class preLoginREPL {
+public class PreLoginREPL {
     private final serverFacade server;
-    private final postLoginREPL postloginREPL;
+    private final PostLoginREPL postloginREPL;
 
-    public preLoginREPL(serverFacade server) {
+    public PreLoginREPL(serverFacade server) {
         this.server = server;
-        this.postloginREPL = new postLoginREPL(server);
+        this.postloginREPL = new PostLoginREPL(server);
     }
 
     public void run() {

@@ -1,6 +1,5 @@
-import chess.*;
 import client.serverFacade;
-import ui.preLoginREPL;
+import ui.PreLoginREPL;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,7 +7,7 @@ public class Main {
         System.out.println("♕ 240 Chess Client: ");
 
         serverFacade server = new serverFacade();
-        preLoginREPL preLogin = new preLoginREPL(server);
+        PreLoginREPL preLogin = new PreLoginREPL(server);
         preLogin.run();
         System.out.println("Exited");
 
