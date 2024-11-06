@@ -6,7 +6,6 @@ import server.Server;
 import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class ServerFacadeTests {
 
     private static Server server;
@@ -25,7 +24,6 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
     @BeforeEach
     void setup() {
         server.clearDB();
@@ -39,30 +37,30 @@ public class ServerFacadeTests {
 
     @Test
     public void registerPositive() {
-        assertTrue(facade.register("username", "password", "email"));
+        assertTrue(registerUser("username", "password", "email"));
     }
 
     @Test
     public void registerNegative() {
-        facade.register("username", "password", "email");
-        assertFalse(facade.register("username", "password", "email"));
+        registerUser("username", "password", "email");
+        assertFalse(registerUser("username", "password", "email"));
     }
 
     @Test
     public void loginPositive() {
-        facade.register("username", "password", "email");
-        assertTrue(facade.login("username", "password"));
+        registerUser("username", "password", "email");
+        assertTrue(loginUser("username", "password"));
     }
 
     @Test
     public void loginNegative() {
-        facade.register("username", "password", "email");
-        assertFalse(facade.login("username", "pass"));
+        registerUser("username", "password", "email");
+        assertFalse(loginUser("username", "pass"));
     }
 
     @Test
     public void logoutPositive() {
-        facade.register("username", "password", "email");
+        registerAndLoginUser("username", "password", "email");
         assertTrue(facade.logout());
     }
 
@@ -73,7 +71,7 @@ public class ServerFacadeTests {
 
     @Test
     public void createGamePositive() {
-        facade.register("username", "password", "email");
+        registerAndLoginUser("username", "password", "email");
         assertTrue(facade.createGame("gameName") >= 0);
     }
 
@@ -84,29 +82,45 @@ public class ServerFacadeTests {
 
     @Test
     public void listGamesPositive() {
-        facade.register("username", "password", "email");
-        facade.createGame("gameName");
+        registerAndLoginUser("username", "password", "email");
+        createGame("gameName");
         assertEquals(1, facade.listGames().size());
     }
 
     @Test
     public void listGamesNegative() {
-        assertEquals(facade.listGames(), HashSet.newHashSet(8));
+        assertEquals(facade.listGames(), new HashSet<>());
     }
 
     @Test
     public void joinGamePositive() {
-        facade.register("username", "password", "email");
-        int id = facade.createGame("gameName");
-        assertTrue(facade.joinGame(id, "WHITE"));
+        registerAndLoginUser("username", "password", "email");
+        int gameId = createGame("gameName");
+        assertTrue(facade.joinGame(gameId, "WHITE"));
     }
 
     @Test
     public void joinGameNegative() {
-        facade.register("username", "password", "email");
-        int id = facade.createGame("gameName");
-        facade.joinGame(id, "WHITE");
-        assertFalse(facade.joinGame(id, "WHITE"));
+        registerAndLoginUser("username", "password", "email");
+        int gameId = createGame("gameName");
+        facade.joinGame(gameId, "WHITE");
+        assertFalse(facade.joinGame(gameId, "WHITE"));
     }
 
+    private boolean registerUser(String username, String password, String email) {
+        return facade.register(username, password, email);
+    }
+
+    private boolean loginUser(String username, String password) {
+        return facade.login(username, password);
+    }
+
+    private void registerAndLoginUser(String username, String password, String email) {
+        registerUser(username, password, email);
+        loginUser(username, password);
+    }
+
+    private int createGame(String gameName) {
+        return facade.createGame(gameName);
+    }
 }
