@@ -30,20 +30,19 @@ public class PreLoginREPL {
     }
 
     private boolean processCommand(String[] input) {
-        switch (input[0]) {
-            case "quit":
-                return true;
-            case "help":
+        return switch (input[0]) {
+            case "quit" -> true;
+            case "help" -> {
                 printHelpMenu();
-                return false;
-            case "login":
-                return handleLogin(input);
-            case "register":
-                return handleRegister(input);
-            default:
+                yield false;
+            }
+            case "login" -> handleLogin(input);
+            case "register" -> handleRegister(input);
+            default -> {
                 handleUnknownCommand();
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     private String[] getUserInput() {
