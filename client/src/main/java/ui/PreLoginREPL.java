@@ -1,16 +1,16 @@
 package ui;
 
-import client.serverFacade;
+import client.ServerFacade;
 
 import java.util.Scanner;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
 public class PreLoginREPL {
-    private final serverFacade server;
+    private final ServerFacade server;
     private final PostLoginREPL postloginREPL;
 
-    public PreLoginREPL(serverFacade server) {
+    public PreLoginREPL(ServerFacade server) {
         this.server = server;
         this.postloginREPL = new PostLoginREPL(server);
     }

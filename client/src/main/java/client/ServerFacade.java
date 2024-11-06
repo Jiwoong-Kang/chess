@@ -9,15 +9,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-public class serverFacade {
+public class ServerFacade {
     private final String baseURL;
     private String authToken;
 
-    public serverFacade() {
+    public ServerFacade() {
         this("http://localhost:8080");
     }
 
-    public serverFacade(String url) {
+    public ServerFacade(String url) {
         this.baseURL = url;
     }
 

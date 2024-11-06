@@ -1,6 +1,6 @@
 package ui;
 
-import client.serverFacade;
+import client.ServerFacade;
 import model.GameData;
 
 import java.util.*;
@@ -9,10 +9,10 @@ import static ui.EscapeSequences.*;
 
 public class PostLoginREPL {
 
-    private final serverFacade server;
+    private final ServerFacade server;
     private List<GameData> games;
 
-    public PostLoginREPL(serverFacade server) {
+    public PostLoginREPL(ServerFacade server) {
         this.server = server;
         this.games = new ArrayList<>();
     }

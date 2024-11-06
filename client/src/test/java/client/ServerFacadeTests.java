@@ -2,7 +2,7 @@ package client;
 
 import org.junit.jupiter.api.*;
 import server.Server;
-import client.serverFacade;
+
 import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServerFacadeTests {
 
     private static Server server;
-    private serverFacade facade;
+    private ServerFacade facade;
     static int port;
 
     @BeforeAll
@@ -29,7 +29,7 @@ public class ServerFacadeTests {
     @BeforeEach
     void setup() {
         server.clearDB();
-        facade = new serverFacade("http://localhost:" + port);
+        facade = new ServerFacade("http://localhost:" + port);
     }
 
     @AfterEach
