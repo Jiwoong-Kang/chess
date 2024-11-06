@@ -76,7 +76,9 @@ public class BoardPrinter {
 
     private String getPieceSymbol(int row, int column) {
         ChessPiece piece = board.getPiece(new ChessPosition(row, column));
-        if (piece == null) return "   ";
+        if (piece == null) {
+            return "   ";
+        }
 
         String color = (piece.getTeamColor() == ChessGame.TeamColor.WHITE)
                 ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK;
