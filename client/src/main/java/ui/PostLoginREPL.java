@@ -15,7 +15,7 @@ public class PostLoginREPL {
 
     public PostLoginREPL(ServerFacade server) {
         this.server = server;
-        this.games = new ArrayList<>();
+        games = new ArrayList<>();
     }
 
     public void run() {
@@ -122,11 +122,17 @@ public class PostLoginREPL {
     }
 
     private void joinGame(int gameIndex, String color) {
-        GameData joinGame = games.get(gameIndex);
+        if (gameIndex <= 0 || gameIndex > games.size()) {
+            out.println("Invalid game index. Please choose a valid game number.");
+            printJoin();
+            return;
+        }
+
+        GameData joinGame = games.get(gameIndex - 1);
         if (server.joinGame(joinGame.gameID(), color)) {
             out.println("You have joined the game");
             new BoardPrinter(new ChessGame().getBoard()).printBoard();
-            // originally it was new BoardPrinter(joinGame.game().getBoard()).printBoard();
+//             new BoardPrinter(joinGame.game().getBoard()).printBoard();
         } else {
             out.println("Game does not exist or color taken");
             printJoin();
@@ -134,14 +140,20 @@ public class PostLoginREPL {
     }
 
     private void observeGame(int gameIndex) {
-        GameData observeGame = games.get(gameIndex);
-        if (server.joinGame(observeGame.gameID(), null)) {
-            out.println("You have joined the game as an observer");
-            new BoardPrinter(observeGame.game().getBoard()).printBoard();
-        } else {
-            out.println("Game does not exist");
+        if (gameIndex <= 0 || gameIndex > games.size()) {
+            out.println("Invalid game index. Please choose a valid game number.");
             printObserve();
+            return;
         }
+//        GameData observeGame = games.get(gameIndex - 1);
+//        if (server.joinGame(observeGame.gameID(), null)) {
+//            out.println("You have joined the game as an observer");
+//            new BoardPrinter(observeGame.game().getBoard()).printBoard();
+//        } else {
+//            out.println("Game does not exist");
+//            printObserve();
+//        }
+        new BoardPrinter(new ChessGame().getBoard()).printBoard();
     }
 
     private void printHelpMenu() {
