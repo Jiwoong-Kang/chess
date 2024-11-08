@@ -91,7 +91,15 @@ public class PostLoginREPL {
             printJoin();
             return;
         }
-        joinGame(Integer.parseInt(input[1]), input[2].toUpperCase());
+        int gameId;
+        try {
+            gameId = Integer.parseInt(input[1]);
+        }catch(NumberFormatException e){
+            out.println("Invalid game ID. Please enter a valid number. ");
+            printJoin();
+            return ;
+        }
+        joinGame(gameId, input[2].toUpperCase());
     }
 
     private void handleObserveCommand(String[] input) {
@@ -100,7 +108,15 @@ public class PostLoginREPL {
             printObserve();
             return;
         }
-        observeGame(Integer.parseInt(input[1]));
+        int gameId;
+        try{
+            gameId = Integer.parseInt(input[1]);
+        }catch(NumberFormatException e){
+            out.println("Invalid game ID. Please enter a valid number. ");
+            printJoin();
+            return ;
+        }
+        observeGame(gameId);
     }
 
     private void handleUnknownCommand() {
@@ -132,7 +148,6 @@ public class PostLoginREPL {
         if (server.joinGame(joinGame.gameID(), color)) {
             out.println("You have joined the game");
             new BoardPrinter(new ChessGame().getBoard()).printBoard();
-//             new BoardPrinter(joinGame.game().getBoard()).printBoard();
         } else {
             out.println("Game does not exist or color taken");
             printJoin();
