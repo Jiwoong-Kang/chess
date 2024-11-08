@@ -145,10 +145,13 @@ public class PostLoginREPL {
         }
 
         GameData joinGame = games.get(gameIndex - 1);
-        if (server.joinGame(joinGame.gameID(), color)) {
+        if(!color.equalsIgnoreCase("White") && !color.equalsIgnoreCase("Black")){
+            out.println("Wrong color. Choose the color between white and black");
+            printJoin();
+        } else if (server.joinGame(joinGame.gameID(), color)) {
             out.println("You have joined the game");
             new BoardPrinter(new ChessGame().getBoard()).printBoard();
-        } else {
+        }else {
             out.println("Game does not exist or color taken");
             printJoin();
         }
