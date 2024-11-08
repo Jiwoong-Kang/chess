@@ -117,7 +117,7 @@ public class PostLoginREPL {
             GameData game = games.get(i);
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "open";
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
-            out.printf("%d -- Game Name: %s  |  White User: %s  |  Black User: %s %n", i, game.gameName(), whiteUser, blackUser);
+            out.printf("%d -- Game Name: %s  |  White User: %s  |  Black User: %s %n", i+1, game.gameName(), whiteUser, blackUser);
         }
     }
 
