@@ -20,12 +20,19 @@ public class PostLoginREPL {
 
     public void run() {
         out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
-        boolean loggedIn = true;
-        while (loggedIn) {
-            String[] input = getUserInput();
-            loggedIn = processCommand(input);
+        boolean running = true;
+        String[] lastInput = null;
+        while (running) {
+            lastInput = getUserInput();
+            running = processCommand(lastInput);
         }
-        new PreLoginREPL(server).run();
+        if (lastInput[0].equals("quit")){
+            out.println("Exiting the game. Goodbye!");
+            System.exit(0);
+        }
+        else {
+            new PreLoginREPL(server).run();
+        }
     }
 
     private boolean processCommand(String[] input) {
