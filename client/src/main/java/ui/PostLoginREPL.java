@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 
@@ -116,7 +117,8 @@ public class PostLoginREPL {
         GameData joinGame = games.get(gameIndex);
         if (server.joinGame(joinGame.gameID(), color)) {
             out.println("You have joined the game");
-            new BoardPrinter(joinGame.game().getBoard()).printBoard();
+            new BoardPrinter(new ChessGame().getBoard()).printBoard();
+            // originally it was new BoardPrinter(joinGame.game().getBoard()).printBoard();
         } else {
             out.println("Game does not exist or color taken");
             printJoin();

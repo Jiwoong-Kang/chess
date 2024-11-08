@@ -42,7 +42,7 @@ public class BoardPrinter {
 
     private String createHeaderRow(boolean reversed) {
         String letters = reversed ? "hgfedcba" : "abcdefgh";
-        return String.format("%s%s%s    %s    %s%s\n",
+        return String.format("%s%s    %s    %s%s\n",
                 SET_BG_COLOR_BLACK, SET_TEXT_COLOR_BLUE, letters,
                 RESET_BG_COLOR, RESET_TEXT_COLOR);
     }
@@ -59,6 +59,7 @@ public class BoardPrinter {
         rowString.append(String.format("%s%s %d %s%s",
                 SET_BG_COLOR_BLACK, SET_TEXT_COLOR_BLUE, row,
                 RESET_BG_COLOR, RESET_TEXT_COLOR));
+        // removed %s from %s%s%s at the beginning.
     }
 
     private void appendSquares(StringBuilder rowString, int row, boolean reversed) {
