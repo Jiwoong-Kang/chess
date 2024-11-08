@@ -18,15 +18,20 @@ public class PreLoginREPL {
     public void run() {
         out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
         out.println("Welcome to Chess! Enter 'help' to get started.");
-
-        while (true) {
+        boolean running = true;
+        while (running) {
             String[] input = getUserInput();
-            if (processCommand(input)) {
-                break;
+            boolean shouldExit = processCommand(input);
+            if (shouldExit) {
+                if (input[0].equals("quit")) {
+                    out.println("Exiting the game. Goodbye!");
+                    System.exit(0);
+                } else {
+                    postloginREPL.run();
+                    return;
+                }
             }
         }
-
-        postloginREPL.run();
     }
 
     private boolean processCommand(String[] input) {
