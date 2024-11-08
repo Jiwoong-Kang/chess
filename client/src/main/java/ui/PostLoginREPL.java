@@ -145,14 +145,7 @@ public class PostLoginREPL {
             printObserve();
             return;
         }
-//        GameData observeGame = games.get(gameIndex - 1);
-//        if (server.joinGame(observeGame.gameID(), null)) {
-//            out.println("You have joined the game as an observer");
-//            new BoardPrinter(observeGame.game().getBoard()).printBoard();
-//        } else {
-//            out.println("Game does not exist");
-//            printObserve();
-//        }
+
         new BoardPrinter(new ChessGame().getBoard()).printBoard();
     }
 
