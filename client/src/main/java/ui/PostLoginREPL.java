@@ -73,8 +73,9 @@ public class PostLoginREPL {
             printCreate();
             return;
         }
-        int gameID = server.createGame(input[1]);
-        out.printf("Created game, ID: %d%n", gameID);
+        String gameName = input[1];
+        server.createGame(gameName);
+        out.printf("%s created successfully", gameName);
     }
 
     private void handleJoinCommand(String[] input) {
