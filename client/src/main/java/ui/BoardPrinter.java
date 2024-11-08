@@ -42,9 +42,15 @@ public class BoardPrinter {
 
     private String createHeaderRow(boolean reversed) {
         String letters = reversed ? "hgfedcba" : "abcdefgh";
-        return String.format("%s%s    %s    %s%s\n",
-                SET_BG_COLOR_BLACK, SET_TEXT_COLOR_BLUE, letters,
-                RESET_BG_COLOR, RESET_TEXT_COLOR);
+        StringBuilder headerRow = new StringBuilder();
+        headerRow.append(String.format("%s%s    ", SET_BG_COLOR_BLACK, SET_TEXT_COLOR_BLUE));
+
+        for (char letter : letters.toCharArray()) {
+            headerRow.append(String.format(" %c ", letter));
+        }
+
+        headerRow.append(String.format("    %s%s\n", RESET_BG_COLOR, RESET_TEXT_COLOR));
+        return headerRow.toString();
     }
 
     private String createChessRow(int row, boolean reversed) {
