@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+
 public class HttpCommunicator {
     String baseURL;
     String authToken;
