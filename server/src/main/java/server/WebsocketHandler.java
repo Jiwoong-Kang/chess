@@ -102,7 +102,9 @@ public class WebsocketHandler {
         } catch (BadRequestException e) {
             sendError(session, new Error("Error: invalid game"));
         } catch (InvalidMoveException e) {
-            sendError(session, new Error("Error: invalid move"));
+            System.out.println("****** error: " + e.getMessage() + "  " + command.getMove().toString());
+            sendError(session,
+                    new Error("Error: invalid move (you might need to specify a promotion piece)"));
         }
     }
     private void handleLeave(Session session, Leave command) throws IOException {
@@ -150,6 +152,7 @@ public class WebsocketHandler {
         }
     }
     private void sendError(Session session, Error error) throws IOException {
+        System.out.printf("Error: %s%n", new Gson().toJson(error));
         session.getRemote().sendString(new Gson().toJson(error));
     }
     private ChessGame.TeamColor getTeamColor(String username, GameData game) {
