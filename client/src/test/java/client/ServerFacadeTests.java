@@ -25,7 +25,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         server.clearDB();
         facade = new ServerFacade("http://localhost:" + port);
     }

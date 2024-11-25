@@ -15,9 +15,11 @@ public class GameplayREPL {
     ChessGame game;
     int gameID;
     public static ChessGame.TeamColor color;
-
-    public GameplayREPL(ServerFacade server, ChessGame game, ChessGame.TeamColor color) {
+    GameData gameData;
+    // put gameData to get a data instead of just chessGame
+    public GameplayREPL(ServerFacade server, GameData gameData, ChessGame.TeamColor color) {
         this.server = server;
+        this.gameData = gameData;
         this.game = gameData.game();
         this.gameID = gameData.gameID();
         GameplayREPL.color = color;

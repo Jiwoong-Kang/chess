@@ -11,11 +11,11 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.serverMessages.Error;
-import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.*;
+import websocket.messages.Error;
+import websocket.messages.LoadGame;
+import websocket.messages.Notification;
+import websocket.messages.ServerMessage;
+import websocket.commands.*;
 import java.io.IOException;
 import java.util.Objects;
 
