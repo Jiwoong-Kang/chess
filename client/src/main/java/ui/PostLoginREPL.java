@@ -5,6 +5,7 @@ import client.ServerFacade;
 import model.GameData;
 
 import java.util.*;
+
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
@@ -179,5 +180,6 @@ public class PostloginREPL {
     private void printObserve() {
         out.println("observe <ID> - observe a game");
     }
+
 
 }
