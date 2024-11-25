@@ -5,13 +5,6 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
 import model.GameData;
-import webSocketMessages.serverMessages.Error;
-import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.MakeMove;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Scanner;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
@@ -27,8 +20,8 @@ public class GameplayREPL {
         this.server = server;
         this.game = gameData.game();
         this.gameID = gameData.gameID();
-        this.color = color;
-        this.boardPrinter = new BoardPrinter(game);
+        GameplayREPL.color = color;
+        boardPrinter = new BoardPrinter(game);
     }
     public void run() {
         boolean inGame = true;
@@ -78,7 +71,7 @@ public class GameplayREPL {
                     break;
             }
         }
-        PostloginREPL postloginREPL = new PostloginREPL(server);
+        PostLoginREPL postloginREPL = new PostLoginREPL(server);
         postloginREPL.run();
     }
     private String[] getUserInput() {

@@ -2,19 +2,15 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import ui.BoardPrinter;
 import ui.GameplayREPL;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
 import static ui.EscapeSequences.ERASE_LINE;
-import static ui.EscapeSequences.moveCursorToLocation;
 
 public class WebsocketCommunicator extends Endpoint {
     Session session;
@@ -48,7 +44,7 @@ public class WebsocketCommunicator extends Endpoint {
         }
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGame loadGame = new Gson().fromJson(message, LoadGame.class);
-            printMoveMade(loadGame.getGame());
+            printLoadedGame(loadGame.getGame());
         }
     }
 
@@ -56,8 +52,8 @@ public class WebsocketCommunicator extends Endpoint {
         System.out.print(ERASE_LINE + '\r');
         System.out.printf("\n%s\n[IN-GAME] >>> ", message);
     }
-    private void printMoveMade(ChessGame game) {
-        System.out.print(ERASE_LINE + "\r\nA move has been made\n");
+    private void printLoadedGame(ChessGame game) {
+        System.out.print(ERASE_LINE + "\r\n");
         GameplayREPL.boardPrinter.updateGame(game);
         GameplayREPL.boardPrinter.printBoard(GameplayREPL.color, null);
         System.out.print("[IN-GAME] >>> ");

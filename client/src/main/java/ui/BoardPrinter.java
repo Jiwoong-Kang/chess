@@ -66,7 +66,8 @@ public class BoardPrinter {
         return output.toString();
     }
 
-    private String boardRow(int row, boolean reversed, ChessPosition startingSquare, HashSet<ChessPosition> highlightedSquares) {
+    private String boardRow(int row, boolean reversed, ChessPosition startingSquare,
+                            HashSet<ChessPosition> highlightedSquares) {
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_BLACK);
         output.append(SET_TEXT_COLOR_BLUE);
@@ -89,7 +90,8 @@ public class BoardPrinter {
         return output.toString();
     }
 
-    private String squareColor(int row, int column, ChessPosition startingSquare, HashSet<ChessPosition> highlightedSquares) {
+    private String squareColor(int row, int column, ChessPosition startingSquare,
+                               HashSet<ChessPosition> highlightedSquares) {
         ChessPosition square = new ChessPosition(row, column);
         if (square.equals(startingSquare)) {
             return SET_BG_COLOR_BLUE;

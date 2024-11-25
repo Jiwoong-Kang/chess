@@ -5,9 +5,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import model.GameData;
 import java.util.*;
-import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
-import java.io.IOException;
 
 public class ServerFacade {
     HttpCommunicator http;

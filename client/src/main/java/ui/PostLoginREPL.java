@@ -9,14 +9,14 @@ import java.util.*;
 import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
-public class PostloginREPL {
+public class PostLoginREPL {
 
     ServerFacade server;
     List<GameData> games;
 
     boolean inGame;
 
-    public PostloginREPL(ServerFacade server) {
+    public PostLoginREPL(ServerFacade server) {
         this.server = server;
         games = new ArrayList<>();
     }
@@ -64,7 +64,7 @@ public class PostloginREPL {
         }
 
         if (!loggedIn) {
-            PreloginREPL preloginREPL = new PreloginREPL(server);
+            PreLoginREPL preloginREPL = new PreLoginREPL(server);
             preloginREPL.run();
         }
     }

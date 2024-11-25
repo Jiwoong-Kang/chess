@@ -45,8 +45,11 @@ public class ChessGame {
         WHITE,
         BLACK;
 
+        public String toString() {
+            return this == WHITE ? "white" : "black";
+        }
+
     }
-    // By using toString, it gives direct recognition which one is while and black.
 
     /**
      * Gets a valid moves for a piece at the given location
