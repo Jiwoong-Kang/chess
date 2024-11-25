@@ -63,19 +63,6 @@ public class ServerFacade {
             System.out.println("Failed to make connection with server");
         }
     }
-    public void closeWS() {
-        try {
-            ws.session.close();
-            ws = null;
-        }
-        catch (IOException e) {
-            System.out.println("Failed to close connection with server");
-        }
-    }
-
-    public void sendWSMessage(String message) {
-        ws.sendMessage(message);
-    }
 
     public void sendCommand(UserGameCommand command) {
         String message = new Gson().toJson(command);

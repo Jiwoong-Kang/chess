@@ -22,7 +22,6 @@ public class GameplayREPL {
     ChessGame game;
     int gameID;
     public static ChessGame.TeamColor color;
-    boolean notificationPending = false;
 
     public GameplayREPL(ServerFacade server, ChessGame game, ChessGame.TeamColor color) {
         this.server = server;
@@ -127,7 +126,6 @@ public class GameplayREPL {
     }
 
     public ChessPiece.PieceType getPieceType(String name) {
-        ChessPiece.PieceType newType = null;
         return switch (name.toUpperCase()) {
             case "QUEEN" -> ChessPiece.PieceType.QUEEN;
             case "BISHOP" -> ChessPiece.PieceType.BISHOP;
@@ -138,6 +136,4 @@ public class GameplayREPL {
         };
     }
 
-    private void confirmResign() {
-    }
 }

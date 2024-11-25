@@ -64,7 +64,7 @@ public class WebsocketHandler {
             AuthData auth = Server.userService.getAuth(command.getAuthString());
             GameData game = Server.gameService.getGameData(command.getAuthString(), command.getGameID());
             ChessGame.TeamColor joiningColor = command.getColorString().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-            boolean correctColor = false;
+            boolean correctColor;
             if (joiningColor == ChessGame.TeamColor.WHITE) {
                 correctColor = Objects.equals(game.whiteUsername(), auth.username());
             }

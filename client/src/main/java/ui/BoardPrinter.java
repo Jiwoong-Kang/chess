@@ -34,7 +34,6 @@ public class BoardPrinter {
             }
         }
 
-        // if reversed, then it is printed with black forward
         boolean reversed = color == ChessGame.TeamColor.BLACK;
         int printCount = color == null ? 2 : 1;
         for (int j = 0; j < printCount; j++) {
