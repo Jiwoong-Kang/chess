@@ -14,6 +14,7 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
+    private boolean gameOver;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -75,11 +76,6 @@ public class ChessGame {
         return validMoves;
     }
 
-    // HashSet<ChessMove> brings all possible paths to go, startPosition becomes its criteria.
-    // saves possible moves to valid moves
-    // after it moves temporarily, clean the startPosition and endPosition becomes currentPosition.
-    // if player's king is safe, that is added to valid move.
-    // endPosition went back to normal and its piece's new startPosition is currentPosition.
 
     /**
      * Makes a move in a chess game
@@ -110,9 +106,6 @@ public class ChessGame {
         }
     }
 
-    // goodMoves are from validMoves, if those are not existed, return false because of boolean.
-    // if there is a valid move and player's correct turn, check if there is any promotion.
-    // the system removes the currentPosition piece and make it exist on where it should move.
 
     /**
      * Determines if the given team is in check
@@ -185,9 +178,6 @@ public class ChessGame {
         return true;
     }
 
-    // look for there is any place to move
-
-
     public boolean isInCheckmate(TeamColor teamColor) {
         return isInCheck(teamColor) && novalidmove(teamColor);
     }
@@ -220,6 +210,14 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+    public boolean getGameOver() {
+        return gameOver;
+    }
+
 
     @Override
     public String toString() {
