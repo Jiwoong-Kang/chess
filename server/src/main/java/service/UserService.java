@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public class UserService {
 
-    UserDAO userDAO;
-    AuthDAO authDAO;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
 
     public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
@@ -20,47 +20,40 @@ public class UserService {
 
         try {
             userDAO.createUser(userData);
+            return generateAuthData(userData.username());
         } catch (DataAccessException e) {
             throw new BadRequestException(e.getMessage());
         }
-        String authToken = UUID.randomUUID().toString();
-        AuthData authData = new AuthData(userData.username(), authToken);
-        authDAO.addAuth(authData);
-
-        return authData;
     }
 
     public AuthData loginUser(UserData userData) throws UnauthorizedException {
-        boolean userAuthenticated;
         try {
-            userAuthenticated = userDAO.authenticateUser(userData.username(), userData.password());
+            if (userDAO.authenticateUser(userData.username(), userData.password())) {
+                return generateAuthData(userData.username());
+            } else {
+                throw new UnauthorizedException();
+            }
         } catch (DataAccessException e) {
-            throw new UnauthorizedException();
-        }
-
-        if (userAuthenticated) {
-            String authToken = UUID.randomUUID().toString();
-            AuthData authData = new AuthData(userData.username(), authToken);
-            authDAO.addAuth(authData);
-            return authData;
-        }
-        else {
             throw new UnauthorizedException();
         }
     }
 
     public void logoutUser(String authToken) throws UnauthorizedException {
-        try {
-            authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
-            throw new UnauthorizedException();
-        }
+        validateAuthToken(authToken);
         authDAO.deleteAuth(authToken);
     }
 
-    public AuthData getAuth(String authToken) throws UnauthorizedException {
+
+    private AuthData generateAuthData(String username) {
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(username, authToken);
+        authDAO.addAuth(authData);
+        return authData;
+    }
+
+    private void validateAuthToken(String authToken) throws UnauthorizedException {
         try {
-            return authDAO.getAuth(authToken);
+            authDAO.getAuth(authToken);
         } catch (DataAccessException e) {
             throw new UnauthorizedException();
         }
