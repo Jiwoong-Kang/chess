@@ -125,6 +125,7 @@ public class PostLoginREPL {
             out.println("You have joined the game");
             inGame = true;
             server.connectWS();
+            server.connect(joinGame.gameID());
             GameplayREPL gameplayREPL = new GameplayREPL(server, joinGame, color);
             gameplayREPL.run();
         } else {
@@ -157,13 +158,13 @@ public class PostLoginREPL {
             out.println("You have joined the game as an observer");
             inGame = true;
             server.connectWS();
+            server.connect(observeGame.gameID());
             GameplayREPL gameplayREPL = new GameplayREPL(server, observeGame, null);
             gameplayREPL.run();
 
         } else {
             out.println("Game does not exist");
             printObserve();
-
         }
     }
 

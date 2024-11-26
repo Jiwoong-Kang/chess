@@ -6,14 +6,6 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
 import model.GameData;
-import websocket.messages.Error;
-import websocket.messages.LoadGame;
-import websocket.messages.Notification;
-import websocket.messages.ServerMessage;
-import websocket.commands.MakeMove;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Scanner;
 
 import static java.lang.System.out;
