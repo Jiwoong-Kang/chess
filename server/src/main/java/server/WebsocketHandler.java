@@ -65,8 +65,8 @@ public class WebsocketHandler {
     private void handleJoinPlayer(Session session, Connect command) throws IOException {
 
         try {
-            AuthData auth = Server.userService.getAuth(command.getAuthString());
-            GameData game = Server.gameService.getGameData(command.getAuthString(), command.getGameID());
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
 
             ChessGame.TeamColor joiningColor = command.getColor().toString().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
@@ -84,7 +84,7 @@ public class WebsocketHandler {
                 return;
             }
 
-            Notification notif = new Notification("%s has joined the game as %s".formatted(auth.username(), command.getColor().toString()));
+            Notification notif = new Notification("%s has joined the game ".formatted(auth.username()));
             broadcastMessage(session, notif);
 
             LoadGame load = new LoadGame(game.game());
@@ -100,8 +100,8 @@ public class WebsocketHandler {
 
     private void handleJoinObserver(Session session, Connect command) throws IOException {
         try {
-            AuthData auth = Server.userService.getAuth(command.getAuthString());
-            GameData game = Server.gameService.getGameData(command.getAuthString(), command.getGameID());
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
 
             Notification notif = new Notification("%s has joined the game as an observer".formatted(auth.username()));
             broadcastMessage(session, notif);
@@ -118,8 +118,8 @@ public class WebsocketHandler {
 
     private void handleMakeMove(Session session, MakeMove command) throws IOException {
         try {
-            AuthData auth = Server.userService.getAuth(command.getAuthString());
-            GameData game = Server.gameService.getGameData(command.getAuthString(), command.getGameID());
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
             ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
             if (userColor == null) {
                 sendError(session, new Error("Error: You are observing this game"));
@@ -174,7 +174,7 @@ public class WebsocketHandler {
 
     private void handleLeave(Session session, Leave command) throws IOException {
         try {
-            AuthData auth = Server.userService.getAuth(command.getAuthString());
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
 
             Notification notif = new Notification("%s has left the game".formatted(auth.username()));
             broadcastMessage(session, notif);
@@ -187,8 +187,8 @@ public class WebsocketHandler {
 
     private void handleResign(Session session, Resign command) throws IOException {
         try {
-            AuthData auth = Server.userService.getAuth(command.getAuthString());
-            GameData game = Server.gameService.getGameData(command.getAuthString(), command.getGameID());
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
             ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
 
             String opponentUsername = userColor == ChessGame.TeamColor.WHITE ? game.blackUsername() : game.whiteUsername();
