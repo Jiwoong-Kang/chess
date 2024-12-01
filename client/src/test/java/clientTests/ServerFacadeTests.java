@@ -1,6 +1,6 @@
 package clientTests;
 
-import client.ServerFacade;
+import web.ServerFacade;
 import org.junit.jupiter.api.*;
 import server.Server;
 

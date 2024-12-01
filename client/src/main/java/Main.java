@@ -1,15 +1,28 @@
-import client.ServerFacade;
-import ui.PreLoginREPL;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.websocket.DeploymentException;
+
+import ui.Data;
+import ui.UserREPL;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-
-        System.out.println("♕ 240 Chess Client: ");
-
-        ServerFacade server = new ServerFacade();
-        PreLoginREPL preLogin = new PreLoginREPL(server);
-        preLogin.run();
-        System.out.println("Exited");
-
+    public static void main(String[] args) throws URISyntaxException, DeploymentException, IOException {
+        UserREPL repl = new UserREPL();
+        String host = "localhost";
+        int port = 8080;
+        if (args.length > 0) {
+            host = args[0];
+        }
+        if (args.length > 1) {
+            port = Integer.parseInt(args[1]);
+        }
+        Data.getInstance().initializeRun(host, port, repl);
+        try {
+            repl.run();
+        }
+        catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
     }
 }
