@@ -55,6 +55,9 @@ public class GameService {
             if (color == null) {
                 throw new BadRequestException("Error: You must select a color");
             }
+            if (color != TeamColor.WHITE && color != TeamColor.BLACK) {
+                throw new BadRequestException("Error: Invalid color. Must be WHITE or BLACK");
+            }
             if ((color == TeamColor.BLACK && game.blackUsername() != null)
                     || (color == TeamColor.WHITE && game.whiteUsername() != null)) {
                 throw new AlreadyTakenException("Error: Color is already taken %s".formatted(game.toString()));
