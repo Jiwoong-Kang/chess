@@ -4,11 +4,12 @@ public class ErrorMsg extends ServerMessage {
 
     String errorMessage;
 
-    public ErrorMsg(String errorMessage) {
+    public ErrorMsg(String msg) {
         super(ServerMessageType.ERROR);
-        this.errorMessage = errorMessage;
+        this.errorMessage = msg;
     }
-    public String getMessage() {
+
+    public String getErrorMessage() {
         return errorMessage;
     }
 }

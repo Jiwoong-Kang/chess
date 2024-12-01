@@ -4,9 +4,9 @@ public class Notification extends ServerMessage {
 
     String message;
 
-    public Notification(String message) {
+    public Notification(String msg) {
         super(ServerMessageType.NOTIFICATION);
-        this.message = message;
+        this.message = msg;
     }
 
     public String getMessage() {
