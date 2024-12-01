@@ -19,7 +19,6 @@ import websocket.messages.ServerMessage;
 import websocket.commands.*;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @WebSocket
 public class WebsocketHandler {
@@ -38,12 +37,12 @@ public class WebsocketHandler {
     public void onMessage(Session session, String message) throws Exception {
         System.out.printf("Received: %s\n", message);
 
-        if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
+        if (message.contains("\"commandType\":\"CONNECT\"")) {
             Connect command = new Gson().fromJson(message, Connect.class);
             Server.gameSessions.replace(session, command.getGameID());
             handleJoinPlayer(session, command);
         }
-        else if (message.contains("\"commandType\":\"JOIN_OBSERVER\"")) {
+        else if (message.contains("\"commandType\":\"CONNECT_\"")) {
             Connect command = new Gson().fromJson(message, Connect.class);
             Server.gameSessions.replace(session, command.getGameID());
             handleJoinObserver(session, command);
@@ -68,21 +67,6 @@ public class WebsocketHandler {
             AuthData auth = Server.userService.getAuth(command.getAuthToken());
             GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
 
-            ChessGame.TeamColor joiningColor = command.getColor().toString().equalsIgnoreCase("white") ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-
-            boolean correctColor;
-            if (joiningColor == ChessGame.TeamColor.WHITE) {
-                correctColor = Objects.equals(game.whiteUsername(), auth.username());
-            }
-            else {
-                correctColor = Objects.equals(game.blackUsername(), auth.username());
-            }
-
-            if (!correctColor) {
-                Error error = new Error("Error: attempting to join with wrong color");
-                sendError(session, error);
-                return;
-            }
 
             Notification notif = new Notification("%s has joined the game ".formatted(auth.username()));
             broadcastMessage(session, notif);
