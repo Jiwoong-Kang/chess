@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
-import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
-import model.GameData;
 import web.WebSocketClient;
 
 public class GameUI extends GameRendererUI {
@@ -32,7 +29,6 @@ public class GameUI extends GameRendererUI {
         this.cmds.put("resign", new FunctionPair<>(List.of("resign", "r"), "Resign from the game.", this::res));
         this.cmds.put("leave",
                 new FunctionPair<>(List.of("leave", "l"), "Stop viewing the game.", this::leave));
-        // System.out.println(formatBoard(Data.getInstance().getGameNumber()));
     }
 
     private String res() {
@@ -103,7 +99,6 @@ public class GameUI extends GameRendererUI {
         try {
             WebSocketClient wsc = Data.getInstance().getWebSocketClient();
             wsc.move(move);
-            // return formatBoard(Data.getInstance().getGameNumber());
             Data.getInstance().setJustMoved(true);
             return "\n";
 

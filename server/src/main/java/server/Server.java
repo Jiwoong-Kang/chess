@@ -50,9 +50,6 @@ public class Server {
         Spark.exception(AlreadyTakenException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_FORBIDDEN));
         Spark.exception(ServerException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_INTERNAL_ERROR));
 
-        // This line initializes the server and can be removed once you have a
-        // functioning endpoint
-        // Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();

@@ -27,14 +27,6 @@ public abstract class SqlDAO extends DatabaseManager {
 
     }
 
-    /**
-     * @param <T>            The type of the parser
-     * @param queryStatement The SQL query
-     * @param parser         The parser
-     * @param args           The arguments for the query
-     * @return The parsed result from the query
-     * @throws DataAccessException if there is an error
-     */
     protected <T> T query(String queryStatement, Parser<T> parser, Object... args) throws DataAccessException {
         try (Connection conn = getConnection(); PreparedStatement statement = conn.prepareStatement(queryStatement)) {
             setParameters(statement, args);
@@ -48,12 +40,6 @@ public abstract class SqlDAO extends DatabaseManager {
         }
     }
 
-    /**
-     * @param queryStatement The SQL query
-     * @param args           The arguments for the query
-     * @return The id of the inserted row
-     * @throws DataAccessException if there is an error
-     */
     protected int update(String queryStatement, Object... args) throws DataAccessException {
         try (Connection conn = getConnection();
              PreparedStatement statement = conn.prepareStatement(queryStatement, Statement.RETURN_GENERATED_KEYS)) {

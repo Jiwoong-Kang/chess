@@ -85,9 +85,6 @@ public class PostloginUI extends GameRendererUI {
             System.out.println("Failed to connect to the web socket server");
         }
 
-        // return "%sSuccessfully joined
-        // game%s\n\n".formatted(EscapeSequences.SET_TEXT_COLOR_GREEN,
-        // EscapeSequences.RESET_TEXT_COLOR);
         return "";
     }
 

@@ -54,7 +54,6 @@ public class ServerFacade {
         Data.getInstance().setAuthToken(null);
         Data.getInstance().setUsername(null);
         Data.getInstance().setState(Data.State.LOGGED_OUT);
-        return;
     }
 
     public CreateGameResult createGame(CreateGameRequest createReq) {
@@ -90,7 +89,6 @@ public class ServerFacade {
         Data.getInstance().setGameNumber(gameNumber);
         Data.getInstance().setColor(color);
         Data.getInstance().setState(Data.State.IN_GAME);
-        return;
     }
 
     public void observeGame(int gameNumber) {
@@ -98,7 +96,6 @@ public class ServerFacade {
         Data.getInstance().addGameID(gameID);
         Data.getInstance().setGameNumber(gameNumber);
         Data.getInstance().setState(Data.State.IN_GAME);
-        return;
     }
 
     private <T> T request(String endpointUrl, String method, Object request, Class<T> responseType) {

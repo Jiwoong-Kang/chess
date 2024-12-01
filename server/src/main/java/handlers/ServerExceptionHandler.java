@@ -12,9 +12,7 @@ public class ServerExceptionHandler<T extends Exception> implements ExceptionHan
 
     private final int code;
 
-    /**
-     * @param code The HTTP response code
-     */
+
     public ServerExceptionHandler(int code) {
         this.code = code;
     }

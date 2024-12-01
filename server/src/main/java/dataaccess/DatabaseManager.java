@@ -9,9 +9,7 @@ public class DatabaseManager {
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
 
-    /*
-     * Load the database information for the db.properties file.
-     */
+
     static {
         try {
             try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
@@ -33,9 +31,7 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * Creates the database if it does not already exist.
-     */
+
     public static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
@@ -48,18 +44,7 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * Create a connection to the database and sets the catalog based upon the
-     * properties specified in db.properties. Connections to the database should
-     * be short-lived, and you must close the connection when you are done with it.
-     * The easiest way to do that is with a try-with-resource block.
-     * <br/>
-     * <code>
-     * try (var conn = DbInfo.getConnection(databaseName)) {
-     * // execute SQL statements.
-     * }
-     * </code>
-     */
+
     public static Connection getConnection() throws DataAccessException {
         try {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
