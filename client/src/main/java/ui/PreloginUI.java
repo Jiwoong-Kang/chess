@@ -9,11 +9,11 @@ public class PreloginUI extends UserInterface {
     PreloginUI() {
         super();
 
-        this.cmds.put("register", new FunctionPair<>(List.of("register", "reg", "r"),
+        this.cmds.put("register", new FunctionPair<>(List.of("register", "r"),
                 new Arguments(List.of("username", "password", "email")), "Register a new user.", this::register));
-        this.cmds.put("login", new FunctionPair<>(List.of("login", "signin", "l"),
+        this.cmds.put("login", new FunctionPair<>(List.of("login", "l"),
                 new Arguments(List.of("username", "password")), "Login to an existing account.", this::login));
-        this.cmds.put("quit", new FunctionPair<>(List.of("quit", "exit"), "Quit the program.", this::quit));
+        this.cmds.put("quit", new FunctionPair<>(List.of("quit"), "Quit the program.", this::quit));
     }
 
     private String quit() {

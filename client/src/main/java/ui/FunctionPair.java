@@ -29,7 +29,6 @@ class Arguments {
 
     @Override
     public String toString() {
-        // List<String> formattedArgs = new ArrayList<>();
         String ss = "";
 
         for (String arg : args) {

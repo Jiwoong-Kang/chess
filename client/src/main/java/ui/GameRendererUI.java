@@ -164,16 +164,6 @@ public abstract class GameRendererUI extends UserInterface {
         return whiteView.toString();
     }
 
-    public String highlightLegal(int gameNumber, ChessPosition position) {
-        ChessGame game = getGame(gameNumber);
-        Collection<ChessMove> allowedMoves = game.validMoves(position);
-        List<ChessPosition> highlightSquares = new ArrayList<>(allowedMoves.size());
-        System.out.println(highlightSquares.toString());
-        for (ChessMove move : allowedMoves) {
-            highlightSquares.add(move.getEndPosition());
-        }
-        return formatBoard(gameNumber, highlightSquares);
-    }
 
     public String highlightLegal(ChessPosition position) {
         ChessGame game = Data.getInstance().getGame();
@@ -185,24 +175,6 @@ public abstract class GameRendererUI extends UserInterface {
         return formatBoard(highlightSquares);
     }
 
-    private String formatBoard(int gameNumber, List<ChessPosition> highlightSquares) {
-        ChessBoard board = getBoard(gameNumber);
-        String[][] boardList = boardToList(board);
-        String view;
-        if (Data.getInstance().getColor() == ChessGame.TeamColor.BLACK) {
-            view = generateBlackView(boardList, List.of());
-        }
-        else {
-            view = generateWhiteView(boardList, List.of());
-        }
-        // String whiteView = generateWhiteView(boardList, List.of());
-        // String blackView = generateBlackView(boardList, List.of());
-        return "%s%s\n\n".formatted(view, EscapeSequences.RESET_BG_COLOR);
-    }
-
-    public String formatBoard(int gameNumber) {
-        return formatBoard(gameNumber, List.of());
-    }
 
     private String formatBoard(List<ChessPosition> highlightSquares) {
         Data.getInstance().getGame();
@@ -215,8 +187,7 @@ public abstract class GameRendererUI extends UserInterface {
         else {
             view = generateWhiteView(boardList, highlightSquares);
         }
-        // String whiteView = generateWhiteView(boardList, highlightSquares);
-        // String blackView = generateBlackView(boardList, highlightSquares);
+
         return "%s%s\n\n".formatted(view, EscapeSequences.RESET_BG_COLOR);
     }
 

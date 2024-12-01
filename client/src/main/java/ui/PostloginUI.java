@@ -10,18 +10,18 @@ import model.GameData;
 public class PostloginUI extends GameRendererUI {
     PostloginUI() {
         super();
-        this.cmds.put("create game", new FunctionPair<>(List.of("creategame", "create", "cg", "c"),
+        this.cmds.put("create game", new FunctionPair<>(List.of("create", "c"),
                 new Arguments(List.of("game_name")), "Create a new game.", this::createGame));
         this.cmds.put("list games",
-                new FunctionPair<>(List.of("listgames", "list", "lg", "l"), "List all games.", this::listGames));
+                new FunctionPair<>(List.of("list","l"), "List all games.", this::listGames));
         this.cmds.put("join game",
-                new FunctionPair<>(List.of("joingame", "join", "jg", "j"),
+                new FunctionPair<>(List.of("join","j"),
                         new Arguments(List.of("WHITE|BLACK", "game_number")), "Join a game with the given number.",
                         this::joinGame));
-        this.cmds.put("observe game", new FunctionPair<>(List.of("observegame", "observe", "og", "o"),
+        this.cmds.put("observe game", new FunctionPair<>(List.of("observe","o"),
                 new Arguments(List.of("game_number")), "Observe a game with the given number.", this::observeGame));
         this.cmds.put("logout",
-                new FunctionPair<>(List.of("logout", "signout"), "Sign out of your account.", this::logout));
+                new FunctionPair<>(List.of("logout"), "Sign out of your account.", this::logout));
         Data.getInstance().setColor(null);
     }
 

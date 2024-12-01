@@ -20,7 +20,6 @@ public class ChessPiece {
         this.type = type;
     }
 
-    // variables input from other places are moved to the class variable which is final through the code above.
 
     /**
      * The various different chess piece options

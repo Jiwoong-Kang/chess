@@ -23,9 +23,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        boardForm[position.getColumn()-1][position.getRow()-1] = piece;
+        boardForm[position.getRow()-1][position.getColumn()-1] = piece;
     }
-    // -1 because normal chessboard starts from (1,1), but programing starts with (0,0)
+
 
     /**
      * Gets a chess piece on the chessboard
@@ -35,9 +35,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return boardForm[position.getColumn()-1][position.getRow()-1];
+        return boardForm[position.getRow()-1][position.getColumn()-1];
     }
-    // it returns the location.
 
     public ChessGame.TeamColor getTeamOfSquare(ChessPosition position) {
         if (getPiece(position) != null) {
@@ -47,8 +46,6 @@ public class ChessBoard {
             return null;
         }
     }
-    // Bring the teamcolor from ChessGame.java to decide the teamcolor.
-    // it returns the color of the selected piece
 
     /**
      * Sets the board to the default starting board
