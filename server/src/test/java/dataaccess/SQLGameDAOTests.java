@@ -3,6 +3,7 @@ package dataaccess;
 import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.sql.SqlGameDAO;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ class SQLGameDAOTest {
     @BeforeEach
     void setUp() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
-        dao = new SQLGameDAO();
+        dao = new SqlGameDAO();
         truncateGameTable();
         ChessGame defaultChessGame = new ChessGame();
         ChessBoard board = new ChessBoard();

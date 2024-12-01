@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.sql.SqlAuthDAO;
 import model.AuthData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ class SQLAuthDAOTest {
     @BeforeEach
     void setUp() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
-        dao = new SQLAuthDAO();
+        dao = new SqlAuthDAO();
         truncateAuthTable();
         defaultAuth = new AuthData("username", "token");
     }

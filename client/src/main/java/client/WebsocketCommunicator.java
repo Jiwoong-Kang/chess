@@ -3,7 +3,7 @@ package client;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import ui.GameplayREPL;
-import websocket.messages.Error;
+import websocket.messages.ErrorMsg;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 
@@ -49,7 +49,7 @@ public class WebsocketCommunicator extends Endpoint {
             printNotification(notif.getMessage());
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
-            Error error = new Gson().fromJson(message, Error.class);
+            ErrorMsg error = new Gson().fromJson(message, ErrorMsg.class);
             printNotification(error.getMessage());
         }
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {

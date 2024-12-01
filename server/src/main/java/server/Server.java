@@ -1,57 +1,58 @@
 package server;
-import dataaccess.*;
-import service.GameService;
-import service.UserService;
-import org.eclipse.jetty.websocket.api.Session;
-import java.util.concurrent.ConcurrentHashMap;
+
+import java.net.HttpURLConnection;
+
+import dataaccess.DataAccess;
+import dataaccess.sql.SqlDataAccess;
+import handlers.ClearHandler;
+import handlers.CreateGameHandler;
+import handlers.JoinGameHandler;
+import handlers.ListGamesHandler;
+import handlers.LoginHandler;
+import handlers.LogoutHandler;
+import handlers.RegisterHandler;
+import handlers.ServerExceptionHandler;
+import service.AlreadyTakenException;
+import service.BadRequestException;
+import service.ServerException;
+import service.UnauthorizedException;
 import spark.*;
+import websocket.WebSocketHandler;
 
 public class Server {
-    UserDAO userDAO;
-    AuthDAO authDAO;
-    GameDAO gameDAO;
 
-    static UserService userService;
-    static GameService gameService;
-
-    UserHandler userHandler;
-    GameHandler gameHandler;
-
-    static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
-
-
-    public Server() {
-        userDAO = new SQLUserDAO();
-        authDAO = new SQLAuthDAO();
-        gameDAO = new SQLGameDAO();
-
-        userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO, authDAO);
-
-        userHandler = new UserHandler(userService);
-        gameHandler = new GameHandler(gameService);
-
-        try { DatabaseManager.createDatabase(); } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        Spark.webSocket("/connect", WebsocketHandler.class);
 
-        Spark.delete("/db", this::clear);
-        Spark.post("/user", userHandler::register);
-        Spark.post("/session", userHandler::login);
-        Spark.delete("/session", userHandler::logout);
-        Spark.get("/game", gameHandler::listGames);
-        Spark.post("/game", gameHandler::createGame);
-        Spark.put("/game", gameHandler::joinGame);
+        DataAccess data = new SqlDataAccess();
+        WebSocketHandler ws = WebSocketHandler.getInstance();
+        ws.setDataAccess(data);
 
-        Spark.exception(BadRequestException.class, this::badRequestExceptionHandler);
-        Spark.exception(UnauthorizedException.class, this::unauthorizedExceptionHandler);
-        Spark.exception(Exception.class, this::genericExceptionHandler);
+        Spark.webSocket("/ws", ws);
+
+        Spark.delete("/db", new ClearHandler(data));
+        Spark.post("/user", new RegisterHandler(data));
+
+        Spark.path("/game", () -> {
+            Spark.post("", new CreateGameHandler(data));
+            Spark.put("", new JoinGameHandler(data));
+            Spark.get("", new ListGamesHandler(data));
+        });
+        Spark.path("/session", () -> {
+            Spark.post("", new LoginHandler(data));
+            Spark.delete("", new LogoutHandler(data));
+        });
+
+        Spark.exception(BadRequestException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_BAD_REQUEST));
+        Spark.exception(UnauthorizedException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_UNAUTHORIZED));
+        Spark.exception(AlreadyTakenException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_FORBIDDEN));
+        Spark.exception(ServerException.class, new ServerExceptionHandler<>(HttpURLConnection.HTTP_INTERNAL_ERROR));
+
+        // This line initializes the server and can be removed once you have a
+        // functioning endpoint
+        // Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -60,31 +61,5 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
-    }
-
-    public void clearDB(){
-        userService.clear();
-        gameService.clear();
-    }
-
-    private Object clear(Request req, Response resp) {
-        clearDB();
-        resp.status(200);
-        return "{}";
-    }
-
-    private void badRequestExceptionHandler(BadRequestException ex, Request req, Response resp) {
-        resp.status(400);
-        resp.body("{ \"message\": \"Error: bad request\" }");
-    }
-
-    private void unauthorizedExceptionHandler(UnauthorizedException ex, Request req, Response resp) {
-        resp.status(401);
-        resp.body("{ \"message\": \"Error: unauthorized\" }");
-    }
-
-    private void genericExceptionHandler(Exception ex, Request req, Response resp) {
-        resp.status(500);
-        resp.body("{ \"message\": \"Error: %s\" }".formatted(ex.getMessage()));
     }
 }

@@ -1,6 +1,9 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.mem.MemAuthDAO;
+import dataaccess.mem.MemUserDAO;
+import dataaccess.AuthDAO;
+import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -15,8 +18,8 @@ public class UserServiceTest {
 
     @BeforeAll
     static void init() {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
+        userDAO = new MemUserDAO();
+        authDAO = new MemAuthDAO();
         userService = new UserService(userDAO, authDAO);
     }
 

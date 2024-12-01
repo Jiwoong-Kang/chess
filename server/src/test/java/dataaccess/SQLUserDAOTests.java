@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.sql.SqlUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ class SQLUserDAOTest {
     @BeforeEach
     void setUp() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
-        dao = new SQLUserDAO();
+        dao = new SqlUserDAO();
         truncateUserTable();
         defaultUser = new UserData("username", "password", "email");
     }
