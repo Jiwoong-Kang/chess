@@ -54,7 +54,6 @@ public class UserService {
         }
     }
 
-    // this is pretty insecure but idrc cause it's only for school, not production
     /**
      * Log in a user
      *
