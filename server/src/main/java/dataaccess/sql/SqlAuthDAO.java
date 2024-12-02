@@ -1,8 +1,8 @@
 package dataaccess.sql;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import model.AuthData;
+import dataaccess.DataAccessException;
 
 public class SqlAuthDAO extends SqlDAO implements AuthDAO {
 

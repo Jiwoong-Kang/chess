@@ -2,10 +2,10 @@ package dataaccess.mem;
 
 import java.util.HashMap;
 
-import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.LoginRequest;
 import model.UserData;
+import dataaccess.DataAccessException;
 
 public class MemUserDAO implements UserDAO {
     private final HashMap<String, UserData> users = new HashMap<>();

@@ -3,11 +3,11 @@ package service;
 import chess.ChessGame;
 import chess.ChessGame.TeamColor;
 import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.CreateGameResult;
 import model.GameListResult;
+import dataaccess.DataAccessException;
 
 public class GameService {
     private final DataAccess dataAccess;

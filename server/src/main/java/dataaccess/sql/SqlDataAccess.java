@@ -3,6 +3,7 @@ package dataaccess.sql;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 
+
 public class SqlDataAccess implements DataAccess {
 
     private final SqlAuthDAO authDAO;

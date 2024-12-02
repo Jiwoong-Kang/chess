@@ -3,8 +3,8 @@ package dataaccess.mem;
 import java.util.HashMap;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import model.AuthData;
+import dataaccess.DataAccessException;
 
 public class MemAuthDAO implements AuthDAO {
     private final HashMap<String, AuthData> tokens = new HashMap<>();

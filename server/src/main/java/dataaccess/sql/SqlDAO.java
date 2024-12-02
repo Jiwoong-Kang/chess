@@ -5,11 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import dataaccess.DataAccessException;
 
 import com.google.gson.Gson;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 
 public abstract class SqlDAO extends DatabaseManager {

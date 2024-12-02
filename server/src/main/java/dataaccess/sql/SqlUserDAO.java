@@ -2,8 +2,8 @@ package dataaccess.sql;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import dataaccess.DataAccessException;
 import model.LoginRequest;
 import model.UserData;
 

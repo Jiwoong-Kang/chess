@@ -49,7 +49,7 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void handleMessage(Session session, String message) throws IOException {
         UserGameCommand cmd = new Gson().fromJson(message, UserGameCommand.class);
-        DataPair dataPair = retrieveData(session, cmd);
+        GameSession dataPair = retrieveData(session, cmd);
         if (dataPair == null) return;
 
         switch (cmd.getCommandType()) {
@@ -63,7 +63,7 @@ public class WebSocketHandler {
         }
     }
 
-    private DataPair retrieveData(Session session, UserGameCommand cmd) throws IOException {
+    private GameSession retrieveData(Session session, UserGameCommand cmd) throws IOException {
         try {
             AuthData authData = dataAccess.getAuthDAO().getAuth(cmd.getAuthToken());
             if (authData == null) {
@@ -75,7 +75,7 @@ public class WebSocketHandler {
                 sendError(session, "Error: Game does not exist.");
                 return null;
             }
-            return new DataPair(authData, gameData);
+            return new GameSession(authData, gameData);
         } catch (DataAccessException e) {
             sendError(session, "Error: Invalid Request");
             return null;
@@ -86,7 +86,7 @@ public class WebSocketHandler {
         manager.error(session, message);
     }
 
-    private void handleConnect(Session session, UserGameCommand cmd, DataPair dataPair) throws IOException {
+    private void handleConnect(Session session, UserGameCommand cmd, GameSession dataPair) throws IOException {
         String username = dataPair.getAuthData().username();
         GameData gameData = dataPair.getGameData();
         manager.add(session, gameData.gameID());
@@ -100,7 +100,7 @@ public class WebSocketHandler {
         manager.send(session, new Gson().toJson(new LoadGame(gameData.game())));
     }
 
-    private void handleMove(Session session, MakeMove cmd, DataPair dataPair) throws IOException {
+    private void handleMove(Session session, MakeMove cmd, GameSession dataPair) throws IOException {
         String username = dataPair.getAuthData().username();
         GameData gameData = dataPair.getGameData();
         TeamColor userColor = getTeamColor(username, gameData);
@@ -185,7 +185,7 @@ public class WebSocketHandler {
         return Character.toString("abcdefgh".charAt(col - 1)) + row;
     }
 
-    private void handleResign(Session session, UserGameCommand cmd, DataPair dataPair) throws IOException {
+    private void handleResign(Session session, UserGameCommand cmd, GameSession dataPair) throws IOException {
         String username = dataPair.getAuthData().username();
         GameData gameData = dataPair.getGameData();
         TeamColor userColor = getTeamColor(username, gameData);
@@ -213,7 +213,7 @@ public class WebSocketHandler {
         manager.send(session, new Gson().toJson(notif));
     }
 
-    private void handleLeave(Session session, UserGameCommand cmd, DataPair dataPair) throws IOException {
+    private void handleLeave(Session session, UserGameCommand cmd, GameSession dataPair) throws IOException {
         String username = dataPair.getAuthData().username();
         TeamColor userColor = getTeamColor(username, dataPair.getGameData());
         GameData gameData = dataPair.getGameData();

@@ -8,9 +8,9 @@ import java.util.HashSet;
 import com.google.gson.Gson;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
+import dataaccess.DataAccessException;
 
 public class SqlGameDAO extends SqlDAO implements GameDAO {
 
