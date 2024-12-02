@@ -1,6 +1,8 @@
 package ui;
 
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 import chess.ChessGame;
 import model.CreateGameRequest;
@@ -10,19 +12,23 @@ import model.GameData;
 public class PostloginUI extends GameRendererUI {
     PostloginUI() {
         super();
-        this.cmds.put("create game", new FunctionPair<>(List.of("create", "c"),
-                new Arguments(List.of("game_name")), "Create a new game.", this::createGame));
-        this.cmds.put("list games",
-                new FunctionPair<>(List.of("list","l"), "List all games.", this::listGames));
-        this.cmds.put("join game",
-                new FunctionPair<>(List.of("join","j"),
-                        new Arguments(List.of("WHITE|BLACK", "game_number")), "Join a game with the given number.",
-                        this::joinGame));
-        this.cmds.put("observe game", new FunctionPair<>(List.of("observe","o"),
-                new Arguments(List.of("game_number")), "Observe a game with the given number.", this::observeGame));
-        this.cmds.put("logout",
-                new FunctionPair<>(List.of("logout"), "Sign out of your account.", this::logout));
+        initializeCommands();
         Data.getInstance().setColor(null);
+    }
+
+    private void initializeCommands() {
+        Map<String, FunctionPair<String>> commandMap = new LinkedHashMap<>();
+        commandMap.put("create game", new FunctionPair<>(List.of("create", "c"),
+                new Arguments(List.of("game_name")), "Create a new game.", this::createGame));
+        commandMap.put("list games", new FunctionPair<>(List.of("list","l"), "List all games.", this::listGames));
+        commandMap.put("join game", new FunctionPair<>(List.of("join","j"),
+                new Arguments(List.of("WHITE|BLACK", "game_number")), "Join a game with the given number.",
+                this::joinGame));
+        commandMap.put("observe game", new FunctionPair<>(List.of("observe","o"),
+                new Arguments(List.of("game_number")), "Observe a game with the given number.", this::observeGame));
+        commandMap.put("logout", new FunctionPair<>(List.of("logout"), "Sign out of your account.", this::logout));
+
+        this.cmds.putAll(commandMap);
     }
 
     private String createGame(String argString) {
@@ -32,40 +38,44 @@ public class PostloginUI extends GameRendererUI {
         }
 
         CreateGameResult res = Data.getInstance().getServerFacade().createGame(new CreateGameRequest(argString));
-        return "%sSuccessfully created new game%s".formatted(EscapeSequences.SET_TEXT_COLOR_GREEN,
-                EscapeSequences.RESET_TEXT_COLOR);
+        return String.format("%sSuccessfully created new game%s",
+                EscapeSequences.SET_TEXT_COLOR_GREEN, EscapeSequences.RESET_TEXT_COLOR);
     }
 
     private String listGames() {
         List<GameData> games = Data.getInstance().getServerFacade().listGames();
-        if (games.size() == 0) {
+        if (games.isEmpty()) {
             return "No games found. Create one with `creategame`.";
         }
 
-        String output = EscapeSequences.SET_TEXT_BOLD + EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Games:\n"
-                + EscapeSequences.RESET_TEXT_BOLD_FAINT;
+        StringBuilder output = new StringBuilder(EscapeSequences.SET_TEXT_BOLD +
+                EscapeSequences.SET_TEXT_COLOR_MAGENTA + "Games:\n" + EscapeSequences.RESET_TEXT_BOLD_FAINT);
+
         for (int i = 0; i < games.size(); i++) {
             GameData game = games.get(i);
-            String gameOut = "\t";
-            String white = game.whiteUsername() == null ? "Empty" : game.whiteUsername();
-            String black = game.blackUsername() == null ? "Empty" : game.blackUsername();
-            white = EscapeSequences.SET_TEXT_COLOR_BLACK + EscapeSequences.SET_BG_COLOR_WHITE + white
-                    + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-            black = EscapeSequences.SET_TEXT_COLOR_WHITE + EscapeSequences.SET_BG_COLOR_BLACK + black
-                    + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-
-            gameOut += emptySpots(game) == 0 ? EscapeSequences.SET_TEXT_COLOR_YELLOW
-                    : EscapeSequences.SET_TEXT_COLOR_GREEN;
-
-            String gameName = EscapeSequences.SET_TEXT_BOLD + game.gameName();
-            String gameNumber = EscapeSequences.SET_TEXT_ITALIC + "(" + (i + 1) + ")" + EscapeSequences.RESET_TEXT_COLOR
-                    + EscapeSequences.RESET_TEXT_ITALIC;
-            gameOut = gameOut + String.format(" %s %s : %s vs. %s\n", gameNumber, gameName, white, black);
-
-            output += gameOut;
+            output.append(formatGameInfo(game, i));
         }
 
-        return output;
+        return output.toString();
+    }
+
+    private String formatGameInfo(GameData game, int index) {
+        String white = formatPlayerName(game.whiteUsername(), true);
+        String black = formatPlayerName(game.blackUsername(), false);
+        String gameColor = (emptySpots(game) == 0) ? EscapeSequences.SET_TEXT_COLOR_YELLOW
+                : EscapeSequences.SET_TEXT_COLOR_GREEN;
+        String gameName = EscapeSequences.SET_TEXT_BOLD + game.gameName();
+        String gameNumber = EscapeSequences.SET_TEXT_ITALIC + "(" + (index + 1) + ")" +
+                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_TEXT_ITALIC;
+
+        return String.format("\t%s %s %s : %s vs. %s\n", gameColor, gameNumber, gameName, white, black);
+    }
+
+    private String formatPlayerName(String username, boolean isWhite) {
+        String name = (username == null) ? "Empty" : username;
+        String textColor = isWhite ? EscapeSequences.SET_TEXT_COLOR_BLACK : EscapeSequences.SET_TEXT_COLOR_WHITE;
+        String bgColor = isWhite ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_BLACK;
+        return textColor + bgColor + name + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
     }
 
     private String joinGame(String argString) {
@@ -78,10 +88,10 @@ public class PostloginUI extends GameRendererUI {
                 : ChessGame.TeamColor.BLACK;
         int gameNumber = Integer.parseInt(args[1]);
         Data.getInstance().getServerFacade().joinGame(color, gameNumber);
+
         try {
             Data.getInstance().getWebSocketClient().connect();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Failed to connect to the web socket server");
         }
 
@@ -89,9 +99,7 @@ public class PostloginUI extends GameRendererUI {
     }
 
     public static int emptySpots(GameData game) {
-        int whiteUser = game.whiteUsername() == null ? 0 : 1;
-        int blackUser = game.blackUsername() == null ? 0 : 1;
-        return whiteUser + blackUser;
+        return (game.whiteUsername() == null ? 0 : 1) + (game.blackUsername() == null ? 0 : 1);
     }
 
     private String observeGame(String argString) {
@@ -101,12 +109,11 @@ public class PostloginUI extends GameRendererUI {
         }
 
         int gameNumber = Integer.parseInt(args[0]);
-
         Data.getInstance().getServerFacade().observeGame(gameNumber);
+
         try {
             Data.getInstance().getWebSocketClient().connect();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Failed to connect to the web socket server");
         }
 
@@ -117,5 +124,4 @@ public class PostloginUI extends GameRendererUI {
         Data.getInstance().getServerFacade().logout();
         return EscapeSequences.SET_TEXT_COLOR_RED + "Successfully logged out." + EscapeSequences.RESET_TEXT_COLOR;
     }
-
 }

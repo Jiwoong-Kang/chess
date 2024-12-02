@@ -1,87 +1,90 @@
 package ui;
 
 import java.util.Scanner;
-
 import javax.websocket.OnMessage;
-
 import com.google.gson.Gson;
-
 import web.WebSocketObserver;
-import websocket.messages.ErrorMsg;
-import websocket.messages.LoadGame;
-import websocket.messages.Notification;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 public class UserREPL implements WebSocketObserver {
+    private final Gson jsonParser = new Gson();
 
     @Override
     @OnMessage
     public void receiveMessage(String msg) {
-        ServerMessage message = new Gson().fromJson(msg, ServerMessage.class);
-        switch (message.getServerMessageType()) {
-            case NOTIFICATION -> {
-                Notification notif = new Gson().fromJson(msg, Notification.class);
-                System.out.println("%s%s%s".formatted(EscapeSequences.SET_TEXT_COLOR_GREEN, notif.getMessage(),
-                        EscapeSequences.RESET_TEXT_COLOR));
-                break;
-
-            }
-            case ERROR -> {
-                ErrorMsg error = new Gson().fromJson(msg, ErrorMsg.class);
-                System.out.println("%s%s%s".formatted(EscapeSequences.SET_TEXT_COLOR_RED, error.getErrorMessage(),
-                        EscapeSequences.RESET_TEXT_COLOR));
-                break;
-            }
-            case LOAD_GAME -> {
-                LoadGame gameMsg = new Gson().fromJson(msg, LoadGame.class);
-                Data.getInstance().setGame(gameMsg.getGame());
-                System.out.println();
-                System.out.println(((GameUI) Data.getInstance().getUi()).formatBoard());
-                Data.getInstance().setJustMoved(false);
-                break;
-            }
-            default -> System.out.println("Unknown message type: " + message.getServerMessageType());
-        }
-
-        printPrompt();
+        ServerMessage message = jsonParser.fromJson(msg, ServerMessage.class);
+        processServerMessage(message, msg);
+        displayPrompt();
     }
 
-    private void printPrompt() {
-        System.out.print("\r" + EscapeSequences.SET_TEXT_COLOR_YELLOW + Data.getInstance().getPrompt()
-                + EscapeSequences.RESET_TEXT_COLOR);
+    private void processServerMessage(ServerMessage message, String rawMsg) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> handleNotification(rawMsg);
+            case ERROR -> handleError(rawMsg);
+            case LOAD_GAME -> handleLoadGame(rawMsg);
+            default -> System.out.println("Unknown message type: " + message.getServerMessageType());
+        }
+    }
+
+    private void handleNotification(String rawMsg) {
+        Notification notif = jsonParser.fromJson(rawMsg, Notification.class);
+        displayColoredMessage(notif.getMessage(), EscapeSequences.SET_TEXT_COLOR_GREEN);
+    }
+
+    private void handleError(String rawMsg) {
+        ErrorMsg error = jsonParser.fromJson(rawMsg, ErrorMsg.class);
+        displayColoredMessage(error.getErrorMessage(), EscapeSequences.SET_TEXT_COLOR_RED);
+    }
+
+    private void handleLoadGame(String rawMsg) {
+        LoadGame gameMsg = jsonParser.fromJson(rawMsg, LoadGame.class);
+        Data.getInstance().setGame(gameMsg.getGame());
+        System.out.println();
+        System.out.println(((GameUI) Data.getInstance().getUi()).formatBoard());
+        Data.getInstance().setJustMoved(false);
+    }
+
+    private void displayColoredMessage(String message, String color) {
+        System.out.println(String.format("%s%s%s", color, message, EscapeSequences.RESET_TEXT_COLOR));
+    }
+
+    private void displayPrompt() {
+        String prompt = String.format("\r%s%s%s",
+                EscapeSequences.SET_TEXT_COLOR_YELLOW,
+                Data.getInstance().getPrompt(),
+                EscapeSequences.RESET_TEXT_COLOR);
+        System.out.print(prompt);
         System.out.flush();
     }
 
     public void run() {
-        // Print the welcome message
+        displayWelcomeMessage();
+        processUserInput();
+    }
+
+    private void displayWelcomeMessage() {
         System.out.printf("%sWelcome to Chess240! Type 'help' for a list of commands. Login to get started!\n",
-                EscapeSequences.SET_TEXT_COLOR_WHITE); // + EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                EscapeSequences.SET_TEXT_COLOR_WHITE);
+    }
 
+    private void processUserInput() {
         try (Scanner scanner = new Scanner(System.in)) {
-            String res = "";
-
-            while (!res.equals("quit")) {
-                // Print the initial prompt and stay on the same line
-                System.out.print("\r" + EscapeSequences.SET_TEXT_COLOR_YELLOW + Data.getInstance().getPrompt()
-                        + EscapeSequences.RESET_TEXT_COLOR);
-                System.out.flush(); // Ensure the prompt is visible
-                // Read user input
-                String line = scanner.nextLine();
-
-                // Process the input
-                String[] tokens = line.toLowerCase().split(" ");
-                res = tokens[0].toLowerCase();
-                try {
-                    String result = Data.getInstance().getUi().runCmd(line);
-
-                    System.out.println(result);
-                }
-                catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-
-                System.out.print(EscapeSequences.RESET_TEXT_COLOR);
+            String userInput = "";
+            while (!userInput.equals("quit")) {
+                displayPrompt();
+                userInput = scanner.nextLine().toLowerCase();
+                executeCommand(userInput);
             }
         }
+    }
+
+    private void executeCommand(String input) {
+        try {
+            String result = Data.getInstance().getUi().runCmd(input);
+            System.out.println(result);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR);
     }
 }
