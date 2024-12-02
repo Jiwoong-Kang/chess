@@ -16,17 +16,17 @@ public class GameUI extends GameRendererUI {
     GameUI() {
         super();
         this.cmds.put("redraw chess board",
-                new FunctionPair<>(List.of("redrawboard", "redraw", "reload", "rb", "r"),
+                new FunctionPair<>(List.of("redraw"),
                         "Redraw the chess board.", this::formatBoard));
         this.cmds.put("make move",
                 new FunctionPair<>(List.of("move", "m"),
                         new Arguments(List.of("from", "to", "?promotion_piece?")),
                         "Move the selected piece from one position to another.", this::move));
         this.cmds.put("highlight legal moves",
-                new FunctionPair<>(List.of("highlight", "moves"),
+                new FunctionPair<>(List.of("highlight"),
                         new Arguments(List.of("piece_location")),
                         "Highlight the legal moves for the selected piece.", this::highlight));
-        this.cmds.put("resign", new FunctionPair<>(List.of("resign", "r"), "Resign from the game.", this::res));
+        this.cmds.put("resign", new FunctionPair<>(List.of("resign"), "Resign from the game.", this::res));
         this.cmds.put("leave",
                 new FunctionPair<>(List.of("leave", "l"), "Stop viewing the game.", this::leave));
     }
