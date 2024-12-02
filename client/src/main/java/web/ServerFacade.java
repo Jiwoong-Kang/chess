@@ -1,141 +1,140 @@
 package web;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import com.google.gson.Gson;
-
 import chess.ChessGame;
-import model.AuthData;
-import model.CreateGameRequest;
-import model.CreateGameResult;
-import model.EmptyRequest;
-import model.GameData;
-import model.GameListResult;
-import model.JoinGameRequest;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 import ui.Data;
 import ui.PostloginUI;
 
 public class ServerFacade {
-    private final String url;
+    private final String serverUrl;
+    private final Gson jsonSerializer = new Gson();
 
-    public ServerFacade(String url) {
-        this.url = url;
+    public ServerFacade(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
     public AuthData register(UserData user) {
-        AuthData authData = request("/user", "POST", user, AuthData.class);
-        Data.getInstance().setAuthToken(authData.authToken());
-        Data.getInstance().setUsername(user.username());
-        Data.getInstance().setState(Data.State.LOGGED_IN);
+        AuthData authData = executeRequest("/user", "POST", user, AuthData.class);
+        updateSessionData(authData, user.username());
         return authData;
     }
 
     public AuthData login(LoginRequest loginRequest) {
-        AuthData authData = request("/session", "POST", loginRequest, AuthData.class);
-        Data.getInstance().setAuthToken(authData.authToken());
-        Data.getInstance().setUsername(authData.username());
-        Data.getInstance().setState(Data.State.LOGGED_IN);
+        AuthData authData = executeRequest("/session", "POST", loginRequest, AuthData.class);
+        updateSessionData(authData, authData.username());
         return authData;
     }
 
     public void logout() {
-        request("/session", "DELETE", null, EmptyRequest.class);
-        Data.getInstance().setAuthToken(null);
-        Data.getInstance().setUsername(null);
-        Data.getInstance().setState(Data.State.LOGGED_OUT);
+        executeRequest("/session", "DELETE", null, EmptyRequest.class);
+        clearSessionData();
     }
 
     public CreateGameResult createGame(CreateGameRequest createReq) {
-        return request("/game", "POST", createReq, CreateGameResult.class);
+        return executeRequest("/game", "POST", createReq, CreateGameResult.class);
     }
 
     public List<GameData> listGames() {
-        Comparator<GameData> comparator = new Comparator<GameData>() {
-            @Override
-            public int compare(GameData o1, GameData o2) {
-                int emptyo1 = PostloginUI.emptySpots(o1);
-                int emptyo2 = PostloginUI.emptySpots(o2);
-                if (emptyo1 != emptyo2) {
-                    return Integer.compare(emptyo1, emptyo2);
-                }
-
-                return Integer.compare(o1.gameID(), o2.gameID());
-            }
-        };
-
-        GameListResult result = request("/game", "GET", null, GameListResult.class);
-        List<GameData> games = new ArrayList<>(result.games());
-        games.sort(comparator);
-        Data.getInstance().setGameList(games);
-        return games;
+        GameListResult result = executeRequest("/game", "GET", null, GameListResult.class);
+        List<GameData> sortedGames = new ArrayList<>(result.games());
+        sortedGames.sort(new GameDataComparator());
+        Data.getInstance().setGameList(sortedGames);
+        return sortedGames;
     }
 
     public void joinGame(ChessGame.TeamColor color, int gameNumber) {
         int gameID = Data.getInstance().getGameList().get(gameNumber - 1).gameID();
         JoinGameRequest joinReq = new JoinGameRequest(color, gameID);
-        request("/game", "PUT", joinReq, EmptyRequest.class);
+        executeRequest("/game", "PUT", joinReq, EmptyRequest.class);
+        updateGameData(gameID, gameNumber, color);
+    }
+
+    public void observeGame(int gameNumber) {
+        int gameID = Data.getInstance().getGameList().get(gameNumber - 1).gameID();
+        updateGameData(gameID, gameNumber, null);
+    }
+
+    private <T> T executeRequest(String endpointUrl, String method, Object requestBody, Class<T> responseType) {
+        try {
+            HttpURLConnection connection = setupConnection(endpointUrl, method);
+            if (requestBody != null) {
+                sendRequestBody(connection, requestBody);
+            }
+            validateResponse(connection);
+            return parseResponse(connection, responseType);
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("Error connecting to server: " + e.getMessage());
+        }
+    }
+
+    private HttpURLConnection setupConnection(String endpointUrl, String method) throws IOException, URISyntaxException {
+        URL url = new URI(this.serverUrl).resolve(endpointUrl).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(method.toUpperCase());
+        connection.addRequestProperty("Accept", "application/json");
+        connection.setDoOutput(true);
+
+        String authToken = Data.getInstance().getAuthToken();
+        if (authToken != null) {
+            connection.addRequestProperty("Authorization", authToken);
+        }
+
+        return connection;
+    }
+
+    private void sendRequestBody(HttpURLConnection connection, Object requestBody) throws IOException {
+        try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8")) {
+            writer.write(jsonSerializer.toJson(requestBody));
+            writer.flush();
+        }
+    }
+
+    private void validateResponse(HttpURLConnection connection) throws IOException {
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new RuntimeException("Failed: " + connection.getResponseMessage());
+        }
+    }
+
+    private <T> T parseResponse(HttpURLConnection connection, Class<T> responseType) throws IOException {
+        if (responseType == null) return null;
+        try (InputStream inputStream = connection.getInputStream()) {
+            String response = new String(inputStream.readAllBytes(), "UTF-8");
+            return jsonSerializer.fromJson(response, responseType);
+        }
+    }
+
+    private void updateSessionData(AuthData authData, String username) {
+        Data.getInstance().setAuthToken(authData.authToken());
+        Data.getInstance().setUsername(username);
+        Data.getInstance().setState(Data.State.LOGGED_IN);
+    }
+
+    private void clearSessionData() {
+        Data.getInstance().setAuthToken(null);
+        Data.getInstance().setUsername(null);
+        Data.getInstance().setState(Data.State.LOGGED_OUT);
+    }
+
+    private void updateGameData(int gameID, int gameNumber, ChessGame.TeamColor color) {
         Data.getInstance().addGameID(gameID);
         Data.getInstance().setGameNumber(gameNumber);
         Data.getInstance().setColor(color);
         Data.getInstance().setState(Data.State.IN_GAME);
     }
 
-    public void observeGame(int gameNumber) {
-        int gameID = Data.getInstance().getGameList().get(gameNumber - 1).gameID();
-        Data.getInstance().addGameID(gameID);
-        Data.getInstance().setGameNumber(gameNumber);
-        Data.getInstance().setState(Data.State.IN_GAME);
-    }
-
-    private <T> T request(String endpointUrl, String method, Object request, Class<T> responseType) {
-        try {
-            Gson gson = new Gson();
-
-            URL url = new URI(this.url).resolve(endpointUrl).toURL();
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod(method.toUpperCase());
-            connection.addRequestProperty("Accept", "application/json");
-            connection.setDoOutput(request != null);
-
-            String authToken = Data.getInstance().getAuthToken();
-            if (authToken != null) {
-                connection.addRequestProperty("Authorization", authToken);
+    private static class GameDataComparator implements Comparator<GameData> {
+        @Override
+        public int compare(GameData o1, GameData o2) {
+            int emptyo1 = PostloginUI.emptySpots(o1);
+            int emptyo2 = PostloginUI.emptySpots(o2);
+            if (emptyo1 != emptyo2) {
+                return Integer.compare(emptyo1, emptyo2);
             }
-
-            connection.connect();
-
-            if (request != null) {
-                OutputStream os = connection.getOutputStream();
-                OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
-                writer.write(gson.toJson(request));
-                writer.flush();
-                os.close();
-            }
-
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new RuntimeException("Failed: " + connection.getResponseMessage());
-            }
-
-            String response = new String(connection.getInputStream().readAllBytes(), "UTF-8");
-            if (responseType != null) {
-                return gson.fromJson(response, responseType);
-            }
-            return null;
-        }
-        catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("Error connecting to server: " + e.getMessage());
+            return Integer.compare(o1.gameID(), o2.gameID());
         }
     }
 }
