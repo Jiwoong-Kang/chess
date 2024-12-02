@@ -101,7 +101,7 @@ public class ServerFacade {
     }
 
     private <T> T parseResponse(HttpURLConnection connection, Class<T> responseType) throws IOException {
-        if (responseType == null) return null;
+        if (responseType == null) {return null;}
         try (InputStream inputStream = connection.getInputStream()) {
             String response = new String(inputStream.readAllBytes(), "UTF-8");
             return jsonSerializer.fromJson(response, responseType);

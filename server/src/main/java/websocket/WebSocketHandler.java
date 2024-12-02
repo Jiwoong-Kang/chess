@@ -50,7 +50,7 @@ public class WebSocketHandler {
     public void handleMessage(Session session, String message) throws IOException {
         UserGameCommand cmd = new Gson().fromJson(message, UserGameCommand.class);
         GameSession dataPair = retrieveData(session, cmd);
-        if (dataPair == null) return;
+        if (dataPair == null) {return;}
 
         switch (cmd.getCommandType()) {
             case CONNECT -> handleConnect(session, cmd, dataPair);
@@ -248,8 +248,8 @@ public class WebSocketHandler {
     }
 
     private TeamColor getTeamColor(String username, GameData gameData) {
-        if (username.equals(gameData.whiteUsername())) return TeamColor.WHITE;
-        if (username.equals(gameData.blackUsername())) return TeamColor.BLACK;
+        if (username.equals(gameData.whiteUsername())) {return TeamColor.WHITE;}
+        if (username.equals(gameData.blackUsername())) {return TeamColor.BLACK;}
         return null;
     }
 }
