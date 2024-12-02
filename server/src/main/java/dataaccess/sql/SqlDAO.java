@@ -1,71 +1,80 @@
 package dataaccess.sql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import dataaccess.DataAccessException;
-
 import com.google.gson.Gson;
-
 import chess.ChessGame;
 import dataaccess.DatabaseManager;
 
 public abstract class SqlDAO extends DatabaseManager {
 
-    public SqlDAO() throws DataAccessException {
+    protected SqlDAO() throws DataAccessException {
+        initializeDatabase();
+    }
+
+    private void initializeDatabase() throws DataAccessException {
         createDatabase();
-        try (Connection conn = getConnection()) {
-            for (String statement : createQuery()) {
-                conn.createStatement().execute(statement);
-            }
-        }
-        catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
-
+        executeInitialQueries();
     }
 
-    protected <T> T query(String queryStatement, Parser<T> parser, Object... args) throws DataAccessException {
-        try (Connection conn = getConnection(); PreparedStatement statement = conn.prepareStatement(queryStatement)) {
-            setParameters(statement, args);
-
-            try (ResultSet res = statement.executeQuery()) {
-                return parser.parse(res);
+    private void executeInitialQueries() throws DataAccessException {
+        try (Connection connection = getConnection()) {
+            for (String query : createQuery()) {
+                executeStatement(connection, query);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
 
-    protected int update(String queryStatement, Object... args) throws DataAccessException {
-        try (Connection conn = getConnection();
-             PreparedStatement statement = conn.prepareStatement(queryStatement, Statement.RETURN_GENERATED_KEYS)) {
-            setParameters(statement, args);
-
-            statement.executeUpdate();
-
-            try (ResultSet res = statement.getGeneratedKeys()) {
-                if (res.next()) {
-                    return res.getInt(1);
-                }
-                return 0;
-            }
+    private void executeStatement(Connection connection, String query) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
         }
-        catch (SQLException e) {
+    }
+
+    protected <T> T query(String sql, Parser<T> parser, Object... params) throws DataAccessException {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            setStatementParameters(preparedStatement, params);
+            return executeQuery(preparedStatement, parser);
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
 
-    private void setParameters(PreparedStatement statement, Object... args) throws SQLException {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof ChessGame) {
-                statement.setString(i + 1, new Gson().toJson(args[i]));
+    private <T> T executeQuery(PreparedStatement preparedStatement, Parser<T> parser) throws SQLException {
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            return parser.parse(resultSet);
+        }
+    }
+
+    protected int update(String sql, Object... params) throws DataAccessException {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setStatementParameters(preparedStatement, params);
+            preparedStatement.executeUpdate();
+            return getGeneratedKey(preparedStatement);
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    private int getGeneratedKey(PreparedStatement preparedStatement) throws SQLException {
+        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
             }
-            else {
-                statement.setObject(i + 1, args[i]);
+            return 0;
+        }
+    }
+
+    private void setStatementParameters(PreparedStatement statement, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            if (params[i] instanceof ChessGame) {
+                statement.setString(i + 1, new Gson().toJson(params[i]));
+            } else {
+                statement.setObject(i + 1, params[i]);
             }
         }
     }

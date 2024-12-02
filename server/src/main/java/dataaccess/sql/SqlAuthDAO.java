@@ -7,38 +7,39 @@ import dataaccess.DataAccessException;
 public class SqlAuthDAO extends SqlDAO implements AuthDAO {
 
     public SqlAuthDAO() throws DataAccessException {
+        super();
     }
 
     @Override
     public void addAuth(AuthData authData) throws DataAccessException {
-        if (getAuth(authData.authToken()) != null) {
+        if (isAuthTokenExists(authData.authToken())) {
             throw new DataAccessException("Error: Auth token already exists");
         }
-        String statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
-        update(statement, authData.authToken(), authData.username());
+        String insertQuery = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        executeUpdate(insertQuery, authData.authToken(), authData.username());
     }
 
     @Override
     public void clear() throws DataAccessException {
-        String statement = "DELETE FROM auth";
-        update(statement);
+        String deleteQuery = "DELETE FROM auth";
+        executeUpdate(deleteQuery);
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        if (getAuth(authToken) == null) {
+        if (!isAuthTokenExists(authToken)) {
             throw new DataAccessException("Error: Auth token does not exist, cannot delete");
         }
-        String statement = "DELETE FROM auth WHERE authToken = ?";
-        update(statement, authToken);
+        String deleteQuery = "DELETE FROM auth WHERE authToken = ?";
+        executeUpdate(deleteQuery, authToken);
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        String statement = "SELECT * FROM auth WHERE authToken = ?";
-        return query(statement, returnStatement -> {
-            if (returnStatement.next()) {
-                return new AuthData(returnStatement.getString("authToken"), returnStatement.getString("username"));
+        String selectQuery = "SELECT * FROM auth WHERE authToken = ?";
+        return executeQuery(selectQuery, resultSet -> {
+            if (resultSet.next()) {
+                return new AuthData(resultSet.getString("authToken"), resultSet.getString("username"));
             }
             return null;
         }, authToken);
@@ -46,13 +47,24 @@ public class SqlAuthDAO extends SqlDAO implements AuthDAO {
 
     @Override
     protected String[] createQuery() {
-        String statement = """
+        String createTableQuery = """
                 CREATE TABLE IF NOT EXISTS `auth` (
                     `authToken` varchar(64) NOT NULL,
                     `username` varchar(64) NOT NULL
                 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                 """;
-        return new String[] { statement };
+        return new String[] { createTableQuery };
     }
 
+    private boolean isAuthTokenExists(String authToken) throws DataAccessException {
+        return getAuth(authToken) != null;
+    }
+
+    private void executeUpdate(String sql, Object... params) throws DataAccessException {
+        update(sql, params);
+    }
+
+    private <T> T executeQuery(String sql, Parser<T> parser, Object... params) throws DataAccessException {
+        return query(sql, parser, params);
+    }
 }
