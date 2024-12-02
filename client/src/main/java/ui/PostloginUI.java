@@ -83,6 +83,10 @@ public class PostloginUI extends GameRendererUI {
         if (args.length != 2) {
             return "Invalid number of arguments. Use `help` for command info.";
         }
+        String colorArg = args[0].toLowerCase();
+        if (!colorArg.equals("white") && !colorArg.equals("black")) {
+            return "Wrong color. Choose the color between white and black";
+        }
 
         ChessGame.TeamColor color = args[0].toLowerCase().equals("white") ? ChessGame.TeamColor.WHITE
                 : ChessGame.TeamColor.BLACK;
