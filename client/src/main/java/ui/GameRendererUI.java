@@ -110,7 +110,7 @@ public abstract class GameRendererUI extends UserInterface {
                         blackView.append(EscapeSequences.SET_BG_COLOR_MAGENTA);
                     }
                     else {
-                        blackView.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                        blackView.append(EscapeSequences.SET_BG_COLOR_YELLOW);
                     }
                 }
                 else {
@@ -118,7 +118,7 @@ public abstract class GameRendererUI extends UserInterface {
                         blackView.append(EscapeSequences.SET_BG_COLOR_RED);
                     }
                     else {
-                        blackView.append(EscapeSequences.SET_BG_COLOR_BLACK);
+                        blackView.append(EscapeSequences.SET_BG_COLOR_BLUE);
                     }
                 }
                 blackView.append(boardList[i][j]);
@@ -143,7 +143,7 @@ public abstract class GameRendererUI extends UserInterface {
                         whiteView.append(EscapeSequences.SET_BG_COLOR_MAGENTA);
                     }
                     else {
-                        whiteView.append(EscapeSequences.SET_BG_COLOR_WHITE);
+                        whiteView.append(EscapeSequences.SET_BG_COLOR_YELLOW);
                     }
                 }
                 else {
@@ -151,7 +151,7 @@ public abstract class GameRendererUI extends UserInterface {
                         whiteView.append(EscapeSequences.SET_BG_COLOR_RED);
                     }
                     else {
-                        whiteView.append(EscapeSequences.SET_BG_COLOR_BLACK);
+                        whiteView.append(EscapeSequences.SET_BG_COLOR_BLUE);
                     }
                 }
                 whiteView.append(boardList[i][j]);
