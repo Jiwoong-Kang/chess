@@ -9,7 +9,8 @@ public class UserInterface implements BaseUI {
 
     UserInterface() {
         this.cmds = new LinkedHashMap<>();
-        this.cmds.put("help", new FunctionPair<>(Arrays.asList("help", "h"), "Displays this help message.", this::help));
+        this.cmds.put("help", new FunctionPair<>(Arrays.asList("help", "h"),
+                "Displays this help message.", this::help));
     }
 
     @Override

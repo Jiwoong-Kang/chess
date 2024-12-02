@@ -71,7 +71,8 @@ public class ServerFacade {
         }
     }
 
-    private HttpURLConnection setupConnection(String endpointUrl, String method) throws IOException, URISyntaxException {
+    private HttpURLConnection setupConnection(String endpointUrl, String method)
+            throws IOException, URISyntaxException {
         URL url = new URI(this.serverUrl).resolve(endpointUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(method.toUpperCase());

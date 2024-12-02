@@ -20,13 +20,16 @@ public class PostloginUI extends GameRendererUI {
         Map<String, FunctionPair<String>> commandMap = new LinkedHashMap<>();
         commandMap.put("create game", new FunctionPair<>(List.of("create", "c"),
                 new Arguments(List.of("game_name")), "Create a new game.", this::createGame));
-        commandMap.put("list games", new FunctionPair<>(List.of("list","l"), "List all games.", this::listGames));
+        commandMap.put("list games", new FunctionPair<>(List.of("list","l"),
+                "List all games.", this::listGames));
         commandMap.put("join game", new FunctionPair<>(List.of("join","j"),
                 new Arguments(List.of("WHITE|BLACK", "game_number")), "Join a game with the given number.",
                 this::joinGame));
         commandMap.put("observe game", new FunctionPair<>(List.of("observe","o"),
-                new Arguments(List.of("game_number")), "Observe a game with the given number.", this::observeGame));
-        commandMap.put("logout", new FunctionPair<>(List.of("logout"), "Sign out of your account.", this::logout));
+                new Arguments(List.of("game_number")),
+                "Observe a game with the given number.", this::observeGame));
+        commandMap.put("logout", new FunctionPair<>(List.of("logout"),
+                "Sign out of your account.", this::logout));
 
         this.cmds.putAll(commandMap);
     }

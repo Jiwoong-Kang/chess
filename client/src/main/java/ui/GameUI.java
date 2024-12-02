@@ -64,6 +64,11 @@ public class GameUI extends GameRendererUI {
         Data.getInstance().setState(Data.State.LOGGED_IN);
         return "Left game.";
     }
+    private boolean isValidPosition(ChessPosition position) {
+        int row = position.getRow();
+        int col = position.getColumn();
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
+    }
 
     private String move(String argString) {
         Data.getInstance().setJustMoved(false);
@@ -76,6 +81,10 @@ public class GameUI extends GameRendererUI {
         try {
             from = parsePosition(args[0]);
             to = parsePosition(args[1]);
+
+            if (!isValidPosition(from) || !isValidPosition(to)) {
+                return "Invalid position. The move is outside the chessboard.";
+            }
         }
         catch (Exception e) {
             return "Invalid position.";

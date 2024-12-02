@@ -23,7 +23,8 @@ public class LogoutHandler extends RequestHandler<LoginRequest> {
     }
 
     @Override
-    public Object getServiceResponse(DataAccess dataAccess, LoginRequest request, String token) throws ServerException {
+    public Object getServiceResponse(DataAccess dataAccess,
+                                     LoginRequest request, String token) throws ServerException {
         return performLogout(token);
     }
 
