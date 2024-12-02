@@ -1,6 +1,7 @@
 package dataaccess.mem;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import dataaccess.UserDAO;
 import model.LoginRequest;
@@ -8,34 +9,49 @@ import model.UserData;
 import dataaccess.DataAccessException;
 
 public class MemUserDAO implements UserDAO {
-    private final HashMap<String, UserData> users = new HashMap<>();
-
+    private final Map<String, UserData> userStorage = new ConcurrentHashMap<>();
 
     @Override
-    public void addUser(UserData user) throws DataAccessException {
-        if (userExists(user.username())) {
+    public void addUser(UserData newUser) throws DataAccessException {
+        if (isUserRegistered(newUser.username())) {
             throw new DataAccessException("The user already exists");
         }
-        users.put(user.username(), user);
+        storeUser(newUser);
     }
-
 
     @Override
     public void clear() throws DataAccessException {
-        users.clear();
+        clearAllUsers();
     }
-
 
     @Override
     public boolean userExists(String username) throws DataAccessException {
-        return users.containsKey(username);
+        return isUserRegistered(username);
     }
-
 
     @Override
-    public boolean validLogin(LoginRequest login) throws DataAccessException {
-        UserData dbUser = users.get(login.username());
-        return dbUser != null && dbUser.password().equals(login.password());
+    public boolean validLogin(LoginRequest loginAttempt) throws DataAccessException {
+        return verifyLoginCredentials(loginAttempt);
     }
 
+    private boolean isUserRegistered(String username) {
+        return userStorage.containsKey(username);
+    }
+
+    private void storeUser(UserData user) {
+        userStorage.put(user.username(), user);
+    }
+
+    private void clearAllUsers() {
+        userStorage.clear();
+    }
+
+    private boolean verifyLoginCredentials(LoginRequest login) {
+        UserData storedUser = userStorage.get(login.username());
+        return storedUser != null && isPasswordMatch(storedUser, login);
+    }
+
+    private boolean isPasswordMatch(UserData storedUser, LoginRequest login) {
+        return storedUser.password().equals(login.password());
+    }
 }
