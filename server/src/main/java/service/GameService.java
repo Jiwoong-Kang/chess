@@ -44,9 +44,14 @@ public class GameService {
             String username = validateAuthToken(authToken).username();
             GameData game = getGameById(gameID);
 
+
+            if (username.equals(game.whiteUsername()) || username.equals(game.blackUsername())) {
+                updateGameWithPlayer(color, username, game);
+                return null;
+            }
+
             validateColorSelection(color);
             validateColorAvailability(color, game);
-
             updateGameWithPlayer(color, username, game);
 
             return null;
@@ -54,6 +59,7 @@ public class GameService {
             throw new ServerException(ex);
         }
     }
+    
 
     private AuthData validateAuthToken(String authToken) throws ServerException {
         try {
