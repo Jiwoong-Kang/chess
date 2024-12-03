@@ -157,7 +157,8 @@ public class WebSocketHandler {
     }
 
     private void handleCheckmate(Session session, TeamColor opponent, GameData gameData) throws IOException {
-        Notification notif = new Notification("Checkmate! %s is the winner.".formatted(opponent.toString().toLowerCase()));
+        String loserUsername = (opponent == TeamColor.WHITE) ? gameData.whiteUsername() : gameData.blackUsername();
+        Notification notif = new Notification("Checkmate! %s has lost the game.".formatted(loserUsername));
         gameData.game().setGameOver(true);
         String notifJson = new Gson().toJson(notif);
         manager.send(session, notifJson);
